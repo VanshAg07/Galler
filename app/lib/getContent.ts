@@ -1,0 +1,256 @@
+import fs from "fs";
+import path from "path";
+import { enrichCareersJob, type CareersJob } from "./careers-data";
+
+export interface SiteContent {
+  hero: {
+    title: string;
+    since: string;
+    description: string;
+    ctaText: string;
+    location: string;
+    videoUrl?: string;
+  };
+  about: {
+    title: string;
+    paragraph1: string;
+    paragraph2: string;
+    backgroundImage?: string;
+    stats: { value: string; label: string }[];
+    ctaText: string;
+  };
+  stats: {
+    clients: {
+      label: string;
+      count: string;
+      description: string;
+      rating: string;
+    };
+    experience: {
+      period: string;
+      count: string;
+      description: string;
+    };
+  };
+  footer: {
+    newsletter: { heading: string; description: string };
+    contact: { address: string; phone: string; email: string };
+    social: { facebook: string; instagram: string; whatsapp: string; twitter: string };
+  };
+  marquee?: {
+    logos: { id: string; src: string; alt: string }[];
+  };
+  aboutPage?: {
+    hero: {
+      tagline: string;
+      heading: string;
+      teamCount: string;
+      teamLabel: string;
+      coordinates: string;
+    };
+    banner: {
+      description: string;
+      teamButtonText: string;
+      brochureText: string;
+      scrollingText: string;
+    };
+    journey: {
+      tagline: string;
+      heading: string;
+      headingHighlight: string;
+      headingEnd: string;
+      storyParagraph1: string;
+      storyParagraph2: string;
+      founderName: string;
+      founderTitle: string;
+      capabilities: string[];
+    };
+    journeyTimeline?: {
+      heading: string;
+      milestones: { year: string; description: string }[];
+    };
+    introSection?: {
+      title: string;
+      paragraph1: string;
+      paragraph2: string;
+    };
+    dimensions?: {
+      heading: string;
+      subtitle: string;
+      cards: {
+        title: string;
+        description: string;
+        icon: "box" | "forklift" | "truck";
+      }[];
+    };
+    team?: {
+      heading: string;
+      subtitle?: string;
+      members: {
+        id: string;
+        name: string;
+        photo: string;
+        linkedin: string;
+        instagram: string;
+        description: string;
+      }[];
+    };
+    achievements?: {
+      heading: string;
+      stats: {
+        value: string;
+        label: string;
+        tone: "team" | "devices" | "clients" | "industries";
+        backgroundImage?: string;
+      }[];
+    };
+    requirement?: {
+      heading: string;
+      submitText: string;
+      backgroundImage?: string;
+    };
+  };
+  contactPage?: {
+    heading: string;
+    description: string;
+    backgroundImage?: string;
+    phone1: string;
+    phone2: string;
+    email: string;
+    address1: string;
+    plants?: {
+      name: string;
+      address: string;
+      image?: string;
+    }[];
+  };
+  blogPage?: {
+    heading: string;
+    tagline: string;
+  };
+  homeBlog?: {
+    tagline: string;
+    heading: string;
+    headingHighlight: string;
+    ctaText: string;
+    readMoreText: string;
+  };
+  homeServices?: {
+    tagline: string;
+    title: string;
+    subtitle: string;
+    categories: {
+      id: string;
+      number: number;
+      title: string;
+      icon: "design" | "manufacturing" | "lifecycle";
+      items: string[];
+    }[];
+  };
+  homeIndustries?: {
+    title: string;
+    watermarkWords?: string[];
+    items: {
+      id: string;
+      slug?: string;
+      name: string;
+      image: string;
+      products?: {
+        id: string;
+        slug?: string;
+        name: string;
+        image?: string;
+        description?: string;
+        keyFeatures?: string[];
+        gallery?: {
+          id: string;
+          src: string;
+          alt?: string;
+          type?: "image" | "video";
+          videoUrl?: string;
+        }[];
+      }[];
+      description?: string;
+      keyFeatures?: string[];
+      gallery?: {
+        id: string;
+        src: string;
+        alt?: string;
+        type?: "image" | "video";
+        videoUrl?: string;
+      }[];
+    }[];
+  };
+  careersPage?: {
+    hero: {
+      headingLine1: string;
+      headingLine2: string;
+      headingLine3: string;
+      description: string;
+      viewPositionsText: string;
+      submitResumeText: string;
+      image?: string;
+    };
+    whyWork: {
+      heading: string;
+      benefits: { title: string; description: string; icon?: string }[];
+    };
+    lifeAtGaller: {
+      heading: string;
+      subtitle: string;
+      images: { id: string; src: string; label: string }[];
+    };
+    openingsSidebar: {
+      ctaHeading: string;
+      ctaParagraph1: string;
+      ctaParagraph2: string;
+      ctaButtonText: string;
+      networkHeading: string;
+      networkDescription: string;
+    };
+    hiringProcess: {
+      heading: string;
+      steps: { number: number; title: string; subtitle: string; icon?: string }[];
+      contactBanner: {
+        heading: string;
+        description: string;
+        email: string;
+        phone: string;
+        buttonText: string;
+      };
+    };
+  };
+}
+
+const CONTENT_PATH = path.join(process.cwd(), "server", "data", "content.json");
+const BLOG_POSTS_PATH = path.join(process.cwd(), "server", "data", "blog-posts.json");
+
+export function getContent(): SiteContent | null {
+  try {
+    const raw = fs.readFileSync(CONTENT_PATH, "utf-8");
+    return JSON.parse(raw) as SiteContent;
+  } catch {
+    return null;
+  }
+}
+
+export function getCareersJobs(): CareersJob[] {
+  try {
+    const raw = fs.readFileSync(
+      path.join(process.cwd(), "server", "data", "careers-jobs.json"),
+      "utf-8"
+    );
+    return (JSON.parse(raw) as CareersJob[]).map(enrichCareersJob);
+  } catch {
+    return [];
+  }
+}
+
+export function getBlogPosts(): unknown[] {
+  try {
+    const raw = fs.readFileSync(BLOG_POSTS_PATH, "utf-8");
+    return JSON.parse(raw) as unknown[];
+  } catch {
+    return [];
+  }
+}
