@@ -2579,7 +2579,7 @@ export default function AdminDashboard() {
       return src;
     };
 
-    const backgroundImage = content.contactPage?.backgroundImage || "";
+    const backgroundImage = String((content.contactPage as Record<string, unknown>)?.backgroundImage ?? "");
 
     return (
       <div className="flex flex-col gap-6">

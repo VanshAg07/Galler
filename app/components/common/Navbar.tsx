@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import logo from "@/Assets/logo.png";
 
+const NAV_GRADIENT = "linear-gradient(49deg, #051c2c 32%, #051c2c 32%, #0a3e65 64%)";
+
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -26,14 +28,13 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
   return (
     <>
     <header
-      className={`fixed top-0 right-0 left-0 z-50 border-b border-gray-100 ${
-        mobileOpen ? "bg-white" : "bg-white/90 backdrop-blur-md"
-      }`}
+      className="fixed top-0 right-0 left-0 z-50 border-b border-white/10"
+      style={{ background: NAV_GRADIENT }}
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex items-center">
-          <Image src={logo} alt="Galler" className="h-10 w-auto" priority />
+          <Image src={logo} alt="Galler" className="h-20 w-auto" priority />
         </Link>
 
         {/* Desktop Nav */}
@@ -44,8 +45,8 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
               <Link
                 key={link.label}
                 href={link.href}
-                className={`relative text-sm font-medium transition-colors hover:text-[#1a1a1a] ${
-                  isActive ? "text-[#1a1a1a]" : "text-gray-500"
+                className={`font-century relative text-[15px] font-medium transition-colors hover:text-white ${
+                  isActive ? "text-white" : "text-white/70"
                 }`}
               >
                 {isActive && (
@@ -61,7 +62,7 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
         <div className="hidden items-center gap-3 md:flex">
           <Link
             href="/admin/login"
-            className="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-gray-50"
+            className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
           >
             Admin Portal
           </Link>
@@ -86,7 +87,7 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
 
         {/* Mobile Menu Toggle */}
         <button
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-[#1a1a1a] md:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-white md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
           aria-expanded={mobileOpen}
@@ -128,7 +129,7 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
                 key={link.label}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-2 text-base font-medium transition-colors ${
+                className={`font-century flex items-center gap-2 text-[15px] font-medium transition-colors ${
                   isActive ? "text-[#1a1a1a]" : "text-gray-600"
                 }`}
               >

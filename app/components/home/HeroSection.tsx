@@ -38,7 +38,7 @@ export default function HeroSection({ content }: Props) {
         <div className="flex flex-1 flex-col justify-center gap-8 sm:gap-10 md:gap-12 lg:flex-row lg:items-center lg:justify-between lg:gap-16 xl:gap-20">
           {/* Headline */}
           <div className="w-full lg:max-w-[55%]">
-            <h1 className="text-[clamp(1.75rem,5vw,4.5rem)] leading-[1.08] font-extrabold tracking-tight text-white whitespace-pre-line">
+            <h1 className="font-cinzel text-[clamp(1.75rem,5vw,4.5rem)] leading-[1.08] font-normal tracking-tight text-white whitespace-pre-line">
               {c.title}
             </h1>
           </div>
@@ -48,7 +48,7 @@ export default function HeroSection({ content }: Props) {
             <p className="font-mono text-[0.65rem] tracking-widest text-white/60 uppercase sm:text-xs">
               // {c.since} //
             </p>
-            <p className="text-sm leading-relaxed text-white/85 sm:text-base md:text-lg">
+            <p className="font-century text-sm leading-relaxed text-white/85 sm:text-base md:text-lg">
               {c.description}
             </p>
             <Button href="/#services" className="w-full justify-center sm:w-auto">
