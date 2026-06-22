@@ -1,10 +1,6 @@
 {
   "hero": {
-    "title": " AN END-TO-END ENGINEERING SOLUTIONS COMPANY",
-    "since": "SINCE - 1995",
-    "description": "We deliver end-to-end manufacturing solutions from machining and fabrication to molding and assembly engineered for quality, efficiency, and on-time delivery.",
-    "ctaText": "Explore our capabilities",
-    "location": "Gurugram, India",
+    "title": "AN END-TO-END ENGINEERING\nSOLUTIONS COMPANY",
     "videoUrl": "/videos/home-video.mp4"
   },
   "about": {
@@ -47,7 +43,7 @@
   },
   "footer": {
     "newsletter": {
-      "heading": "Stay connected",
+      "heading": "Stay Connected",
       "description": "Join our newsletter for tips, updates, and project highlights—only the good stuff."
     },
     "links": {
@@ -280,8 +276,8 @@
   },
   "homeBlog": {
     "tagline": "Insights & Article",
-    "heading": "Latest from our",
-    "headingHighlight": "blog",
+    "heading": "Our Latest",
+    "headingHighlight": "Blogs",
     "ctaText": "View all blogs",
     "readMoreText": "Read full blog"
   },

@@ -5,11 +5,11 @@ import { enrichCareersJob, type CareersJob } from "./careers-data";
 export interface SiteContent {
   hero: {
     title: string;
-    since: string;
-    description: string;
-    ctaText: string;
-    location: string;
     videoUrl?: string;
+    since?: string;
+    description?: string;
+    ctaText?: string;
+    location?: string;
   };
   about: {
     title: string;

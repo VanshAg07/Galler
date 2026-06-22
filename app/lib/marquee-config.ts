@@ -1,3 +1,5 @@
+import { API_URL } from "@/app/lib/apiUrl";
+
 export type MarqueeLogo = {
   id: string;
   src: string;
@@ -84,7 +86,7 @@ export const DEFAULT_MARQUEE_LOGOS: MarqueeLogo[] = [
 export function resolveMarqueeSrc(src: string): string {
   if (src.startsWith("http://") || src.startsWith("https://")) return src;
   if (src.startsWith("/uploads/")) {
-    return `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001"}${src}`;
+    return `${API_URL}${src}`;
   }
   return src;
 }

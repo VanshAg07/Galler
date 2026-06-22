@@ -16,7 +16,7 @@ const footerLinks = [
 
 const DEFAULTS: SiteContent["footer"] = {
   newsletter: {
-    heading: "Stay connected",
+    heading: "Stay Connected",
     description: "Join our newsletter for tips, updates, and project highlights—only the good stuff.",
   },
   contact: {
@@ -96,10 +96,10 @@ export default function Footer({ content }: Props) {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
 
           {/* Newsletter */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
             <h3 className="text-lg font-bold">{c.newsletter.heading}</h3>
             <p className="text-sm leading-relaxed text-gray-400">{c.newsletter.description}</p>
-            <div className="flex overflow-hidden rounded-full border border-gray-600">
+            <div className="flex w-full max-w-sm overflow-hidden rounded-full border border-gray-600 md:max-w-none">
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -119,9 +119,9 @@ export default function Footer({ content }: Props) {
           </div>
 
           {/* Links */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
             <h3 className="text-lg font-bold">Links</h3>
-            <nav className="flex flex-col gap-3">
+            <nav className="flex flex-col items-center gap-3 md:items-start">
               {footerLinks.map((link) => (
                 <Link
                   key={link.label}
@@ -135,24 +135,24 @@ export default function Footer({ content }: Props) {
           </div>
 
           {/* Contact Info */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
             <h3 className="text-lg font-bold">Contact info</h3>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-start gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0">
+            <div className="flex flex-col items-center gap-4 md:items-start">
+              <div className="flex items-start justify-center gap-3 md:justify-start">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 h-[18px] w-[18px] shrink-0">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
-                <p className="text-sm leading-relaxed text-gray-400">{c.contact.address}</p>
+                <p className="max-w-xs text-sm leading-relaxed text-gray-400 md:max-w-none">{c.contact.address}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <div className="flex items-center justify-center gap-3 md:justify-start">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 <p className="text-sm text-gray-400">{c.contact.phone}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <div className="flex items-center justify-center gap-3 md:justify-start">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <polyline points="22,6 12,13 2,6" />
                 </svg>

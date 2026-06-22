@@ -66,23 +66,6 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
           >
             Admin Portal
           </Link>
-          <Link
-            href="/contact"
-            className="inline-flex items-center rounded-full bg-[#1a1a1a] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#2a2a2a]"
-          >
-            Get a quote
-            <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded bg-[var(--primary-orange)]">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path
-                  d="M1 7h12m0 0L8 2m5 5L8 12"
-                  stroke="#fff"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </span>
-          </Link>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -149,18 +132,6 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
             className="text-base font-medium text-[#1a1a1a]"
           >
             Admin Portal
-          </Link>
-          <Link
-            href="/contact"
-            onClick={() => setMobileOpen(false)}
-            className="inline-flex w-fit items-center rounded-full bg-[#1a1a1a] px-5 py-2.5 text-sm font-medium text-white"
-          >
-            Get a quote
-            <span className="ml-2 inline-flex h-6 w-6 items-center justify-center rounded bg-[var(--primary-orange)]">
-              <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
           </Link>
         </div>
       </div>

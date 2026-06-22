@@ -104,7 +104,7 @@ function ServiceItem({ index, label }: { index: number; label: string }) {
       <div className="flex w-14 shrink-0 items-center justify-center border-r border-gray-200 bg-[#fafafa] text-sm font-bold text-primary sm:w-16">
         {num}
       </div>
-      <p className="flex items-center px-4 py-3.5 text-sm leading-snug text-[#1a1a1a] sm:px-5 sm:text-[0.95rem]">
+      <p className="flex items-center px-4 py-3.5 font-century text-[18px] leading-snug text-[#1a1a1a] sm:px-5">
         {label}
       </p>
     </div>
@@ -123,7 +123,7 @@ function CategoryColumn({ category }: { category: ServiceCategory }) {
         </span>
       </div>
 
-      <h3 className="mb-6 text-center text-lg font-bold tracking-wide text-[#1a1a1a] sm:text-xl">
+      <h3 className="mb-6 text-center font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#1a1a1a]">
         {category.title}
       </h3>
 
@@ -144,16 +144,16 @@ export default function OurServicesSection({ content }: Props) {
   };
 
   return (
-    <section id="services" className="bg-white py-16 sm:py-20 md:py-24 lg:py-28">
+    <section id="services" className="bg-[#f6f6f6] py-16 sm:py-20 md:py-24 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         <header className="mx-auto mb-14 max-w-4xl text-center sm:mb-16 md:mb-20">
           <p className="font-mono text-xs tracking-[0.25em] text-gray-500 uppercase sm:text-sm">
             — {c.tagline} —
           </p>
-          <h2 className="mt-4 font-serif text-3xl tracking-wide text-[#1a1a1a] sm:text-4xl md:text-[2.75rem]">
+          <h2 className="mt-4 font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
             {c.title}
           </h2>
-          <p className="mt-5 text-sm leading-relaxed font-medium tracking-wide text-gray-600 uppercase sm:text-base">
+          <p className="mt-5 font-century text-[18px] leading-relaxed text-gray-600">
             {c.subtitle}
           </p>
         </header>

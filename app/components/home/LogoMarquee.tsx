@@ -9,9 +9,9 @@ export default function LogoMarquee({ content, heading = "OUR CLIENTS" }: Props)
   if (logos.length === 0) return null;
 
   return (
-    <section aria-label="Partner logos" className="bg-white py-14 sm:py-16">
+    <section aria-label="Partner logos" className="bg-[#f6f6f6] py-14 sm:py-16">
       <div className="relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-        <h2 className="mb-10 text-center font-serif text-3xl tracking-[0.15em] text-[#1a1a1a] sm:mb-12 sm:text-4xl">
+        <h2 className="mb-10 text-center font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] sm:mb-12 md:text-[40px]">
           {heading}
         </h2>
         <MarqueeTrack logos={logos} />

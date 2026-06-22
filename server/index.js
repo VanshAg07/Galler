@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 5001;
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://galler-lokb.onrender.com",
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 

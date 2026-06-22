@@ -12,7 +12,7 @@ import {
 } from "@/app/lib/marquee-config";
 import { enrichCareersJob } from "@/app/lib/careers-data";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { API_URL } from "@/app/lib/apiUrl";
 
 /* ─── Sidebar structure ───────────────────────────────────────────────── */
 type SidebarGroup = {
@@ -774,10 +774,6 @@ export default function AdminDashboard() {
             </div>
           </div>
           {renderField("hero", "title", "Main Headline")}
-          {renderField("hero", "since", "Since Label")}
-          {renderField("hero", "description", "Description", true)}
-          {renderField("hero", "ctaText", "CTA Button Text")}
-          {renderField("hero", "location", "Location")}
         </div>
       </div>
     );

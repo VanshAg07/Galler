@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
 
-const uploadHost = process.env.NEXT_PUBLIC_API_URL
-  ? new URL(process.env.NEXT_PUBLIC_API_URL).hostname
-  : "localhost";
+const defaultApiUrl =
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === "production"
+    ? "https://galler-lokb.onrender.com"
+    : "http://localhost:5001");
+
+const uploadHost = new URL(defaultApiUrl).hostname;
+const uploadProtocol = new URL(defaultApiUrl).protocol.replace(":", "") as "http" | "https";
 
 const nextConfig: NextConfig = {
   images: {
@@ -14,7 +19,7 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
       {
-        protocol: "https",
+        protocol: uploadProtocol,
         hostname: uploadHost,
         pathname: "/uploads/**",
       },

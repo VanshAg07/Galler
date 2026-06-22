@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { API_URL } from "@/app/lib/apiUrl";
 
 interface SubmitResumeModalProps {
   open: boolean;

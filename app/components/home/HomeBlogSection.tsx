@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { BlogPostDetail } from "@/app/lib/blog-data";
 import type { SiteContent } from "@/app/lib/getContent";
-import Button from "../common/Button";
 
 type Props = {
   posts: BlogPostDetail[];
@@ -10,8 +9,8 @@ type Props = {
 
 const DEFAULTS: NonNullable<SiteContent["homeBlog"]> = {
   tagline: "Insights & Article",
-  heading: "Latest from our",
-  headingHighlight: "blog",
+  heading: "Our Latest",
+  headingHighlight: "Blogs",
   ctaText: "View all blogs",
   readMoreText: "Read full blog",
 };
@@ -68,16 +67,13 @@ export default function HomeBlogSection({ posts, content }: Props) {
   if (displayPosts.length === 0) return null;
 
   return (
-    <section className="bg-white py-20 sm:py-24">
+    <section className="bg-[#f6f6f6] py-20 sm:py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-12 flex flex-col items-start justify-between gap-6 md:mb-16 md:flex-row md:items-end">
-          <div className="flex flex-col gap-4">
-            <h2 className="text-3xl font-bold text-[#1a1a1a] md:text-4xl lg:text-5xl">
-              {c.heading}{" "}
-              <span className="text-navy">{c.headingHighlight}</span>
-            </h2>
-          </div>
-          <Button href="/blog">{c.ctaText}</Button>
+        <div className="mb-12 text-center md:mb-16">
+          <h2 className="font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
+            {c.heading}{" "}
+            <span className="text-navy">{c.headingHighlight}</span>
+          </h2>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">

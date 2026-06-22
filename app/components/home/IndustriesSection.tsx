@@ -58,9 +58,9 @@ export default function IndustriesSection({ content }: Props) {
   };
 
   return (
-    <section id="industries" className="bg-white py-8 sm:py-10 md:py-12">
+    <section id="industries" className="bg-[#f6f6f6] py-8 sm:py-10 md:py-12">
       <div className="mx-auto max-w-7xl px-6">
-        <h2 className="text-center font-serif text-2xl tracking-[0.12em] text-[#1a1a1a] sm:text-3xl md:text-4xl">
+        <h2 className="text-center font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
           {c.title}
         </h2>
 

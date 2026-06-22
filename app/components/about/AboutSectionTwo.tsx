@@ -21,13 +21,13 @@ export default function AboutSectionTwo({
     <section className="bg-[#f2f2f2] py-14 sm:py-16">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 sm:px-8 lg:grid-cols-12 lg:items-center lg:gap-14 lg:px-10">
         <div className="lg:col-span-7">
-          <nav className="mb-8 text-sm text-[#7a7a7a]">
+          {/* <nav className="mb-8 text-sm text-[#7a7a7a]">
             <Link href="/" className="transition-colors hover:text-[#1a1a1a]">
               Home
             </Link>
             <span className="mx-2">›</span>
             <span className="font-medium text-[#1a1a1a]">About Us</span>
-          </nav>
+          </nav> */}
 
           <h2 className="max-w-2xl text-3xl leading-tight font-medium tracking-wide text-[#1f1f1f] sm:text-4xl">
             {title}

@@ -11,8 +11,7 @@ import {
 import ApplyJobModal from "./ApplyJobModal";
 import SubmitResumeModal from "./SubmitResumeModal";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
-
+import { API_URL } from "@/app/lib/apiUrl";
 const categories = JOB_CATEGORIES;
 
 function JobIcon({ category }: { category: JobCategory }) {

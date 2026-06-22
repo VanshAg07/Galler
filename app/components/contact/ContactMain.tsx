@@ -6,7 +6,7 @@ import { GoClock } from "react-icons/go";
 import { IoLocationOutline, IoMailOutline } from "react-icons/io5";
 import GoldAccentLine from "./GoldAccentLine";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { API_URL } from "@/app/lib/apiUrl";
 
 interface ContactInfoItem {
   label: string;

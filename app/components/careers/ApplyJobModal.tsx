@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import type { CareersJob } from "@/app/lib/careers-data";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { API_URL } from "@/app/lib/apiUrl";
 
 interface ApplyJobModalProps {
   job: CareersJob | null;
