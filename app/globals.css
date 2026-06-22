@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "Cinzel";
-  src: url("../fonts/Cinzel/static/Cinzel-Regular.ttf") format("truetype");
+  src: url("../Fonts/Cinzel/static/Cinzel-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: "Cinzel";
-  src: url("../fonts/Cinzel/Cinzel-VariableFont_wght.ttf") format("truetype");
+  src: url("../Fonts/Cinzel/Cinzel-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 900;
   font-style: normal;
   font-display: swap;
@@ -18,7 +18,7 @@
 
 @font-face {
   font-family: "Century Gothic";
-  src: url("../fonts/CenturyGothic.woff") format("woff");
+  src: url("../Fonts/CenturyGothic.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
