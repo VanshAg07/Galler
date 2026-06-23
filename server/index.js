@@ -14,12 +14,14 @@ const careersRoutes = require('./routes/careers');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://galler-pi.vercel.app",
-  process.env.FRONTEND_URL,
-  ...(process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? []),
-].filter(Boolean);
+// const allowedOrigins = [
+//   "http://localhost:3000",
+//   "https://galler-pi.vercel.app",
+//   process.env.FRONTEND_URL,
+//   ...(process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? []),
+// ].filter(Boolean);
+
+const allowedOrigins = "*";
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
