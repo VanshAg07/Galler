@@ -16,17 +16,26 @@ const PORT = process.env.PORT || 5001;
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://galler-lokb.onrender.com",
+  "https://galler-pi.vercel.app",
   process.env.FRONTEND_URL,
+  ...(process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? []),
 ].filter(Boolean);
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  // Vercel production + preview deployments
+  if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(origin)) return true;
+  return false;
+}
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (isAllowedOrigin(origin)) {
       callback(null, true);
       return;
     }
-    callback(new Error("Not allowed by CORS"));
+    callback(new Error(`Not allowed by CORS: ${origin}`));
   },
   credentials: true,
 }));

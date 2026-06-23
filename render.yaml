@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: galler-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: FRONTEND_URL
+        value: https://galler-pi.vercel.app
+      - key: JWT_SECRET
+        generateValue: true

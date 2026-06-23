@@ -6,8 +6,18 @@ const defaultApiUrl =
     ? "https://galler-lokb.onrender.com"
     : "http://localhost:5001");
 
-const uploadHost = new URL(defaultApiUrl).hostname;
-const uploadProtocol = new URL(defaultApiUrl).protocol.replace(":", "") as "http" | "https";
+let uploadHost = "localhost";
+let uploadProtocol: "http" | "https" = "http";
+
+if (defaultApiUrl) {
+  try {
+    const parsed = new URL(defaultApiUrl);
+    uploadHost = parsed.hostname;
+    uploadProtocol = parsed.protocol.replace(":", "") as "http" | "https";
+  } catch {
+    // keep localhost defaults
+  }
+}
 
 const nextConfig: NextConfig = {
   images: {

@@ -19,6 +19,14 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
+      if (!API_URL) {
+        setError(
+          "API URL is not configured. Set NEXT_PUBLIC_API_URL on Vercel to your Render backend URL."
+        );
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
