@@ -10,7 +10,7 @@ const NAV_GRADIENT = "linear-gradient(49deg, #051c2c 32%, #051c2c 32%, #0a3e65 6
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Blog", href: "/blog" },
+  { label: "Our Projects", href: "/projects" },
   { label: "Careers", href: "/careers" },
   { label: "Contact", href: "/contact" },
 ];

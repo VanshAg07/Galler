@@ -2,6 +2,7 @@ import Link from "next/link";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import { getIndustrySlug } from "@/app/lib/industries-types";
 import type { SiteContent } from "@/app/lib/getContent";
+import industriesBg from "@/Assets/industries.png";
 
 type IndustryItem = {
   id: string;
@@ -58,8 +59,19 @@ export default function IndustriesSection({ content }: Props) {
   };
 
   return (
-    <section id="industries" className="bg-[#f6f6f6] py-8 sm:py-10 md:py-12">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="industries" className="relative bg-white py-8 sm:py-10 md:py-12">
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `url(${industriesBg.src})`,
+          backgroundAttachment: "fixed",
+          backgroundRepeat: "repeat",
+          backgroundSize: "135% auto",
+          backgroundPosition: "center top",
+        }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6">
         <h2 className="text-center font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
           {c.title}
         </h2>

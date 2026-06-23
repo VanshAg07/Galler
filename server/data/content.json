@@ -57,8 +57,8 @@
           "href": "/about"
         },
         {
-          "label": "Blog",
-          "href": "/blog"
+          "label": "Careers",
+          "href": "/careers"
         }
       ],
       "column2": [
@@ -270,16 +270,96 @@
       }
     ]
   },
-  "blogPage": {
-    "heading": "Our blogs",
-    "tagline": "Insights & Article"
-  },
-  "homeBlog": {
-    "tagline": "Insights & Article",
-    "heading": "Our Latest",
-    "headingHighlight": "Blogs",
-    "ctaText": "View all blogs",
-    "readMoreText": "Read full blog"
+  "projectsPage": {
+    "hero": {
+      "heading": "OUR PROJECTS",
+      "subtitle": "Select an industry below to explore our successfully implemented projects",
+      "ctaText": "START A PROJECT",
+      "backgroundImage": "/uploads/image-1782202275420-64479874.jpg"
+    },
+    "industries": [
+      {
+        "id": "telecommunication",
+        "slug": "telecommunication",
+        "name": "TELECOMMUNICATION",
+        "icon": "",
+        "image": "/uploads/image-1782203472294-182380804.jpg",
+        "projects": [
+          {
+            "id": "access-control-locks",
+            "name": "Access Control Locks",
+            "features": [
+              "Enabling visitors or employees to access sites/doors via card",
+              "Preventing unauthorized access",
+              "Card-based authentication system",
+              "Real-time access monitoring"
+            ],
+            "image": ""
+          },
+          {
+            "id": "outdoor-cabinet-locks",
+            "name": "Outdoor Cabinet Locks",
+            "features": [
+              "Low power consumption locking solutions",
+              "Highly resistant and weatherproof",
+              "Designed for telecommunications cabinets",
+              "Remote monitoring capabilities"
+            ],
+            "image": ""
+          },
+          {
+            "id": "remote-telemetric-unit",
+            "name": "Remote Telemetric Unit",
+            "features": [
+              "IOT device for manifold utilities",
+              "Real-time data transmission",
+              "Multi-sensor integration",
+              "Cloud connectivity enabled"
+            ],
+            "image": ""
+          },
+          {
+            "id": "dc-energy-meter",
+            "name": "DC Energy Meter",
+            "features": [
+              "Multi-channel DC energy measurement",
+              "Designed to overcome telecom challenges",
+              "Accurate and reliable monitoring",
+              "Data logging and analytics",
+              "Remote configuration support"
+            ],
+            "image": ""
+          }
+        ]
+      },
+      {
+        "id": "petroleum",
+        "slug": "petroleum",
+        "name": "PETROLEUM",
+        "icon": "",
+        "image": "/uploads/image-1782203291277-968558819.jpg",
+        "projects": [
+          {
+            "id": "1782202593218",
+            "name": "New Project",
+            "features": [
+              "hello",
+              "hello",
+              "hello"
+            ],
+            "image": "/uploads/image-1782202601678-645663077.jpg"
+          }
+        ]
+      },
+      {
+        "id": "automobile",
+        "slug": "automobile",
+        "name": "AUTOMOBILE",
+        "icon": "",
+        "image": "/uploads/image-1782203339109-855343167.jpg",
+        "projects": []
+      }
+    ]
   },
   "homeServices": {
     "tagline": "WHAT WE DO",

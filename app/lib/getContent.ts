@@ -124,16 +124,27 @@ export interface SiteContent {
       image?: string;
     }[];
   };
-  blogPage?: {
-    heading: string;
-    tagline: string;
-  };
-  homeBlog?: {
-    tagline: string;
-    heading: string;
-    headingHighlight: string;
-    ctaText: string;
-    readMoreText: string;
+  projectsPage?: {
+    hero: {
+      heading: string;
+      subtitle: string;
+      ctaText: string;
+      backgroundImage?: string;
+    };
+    industries: {
+      id: string;
+      slug?: string;
+      name: string;
+      icon?: string;
+      image?: string;
+      projects?: {
+        id: string;
+        name: string;
+        description?: string;
+        features?: string[];
+        image?: string;
+      }[];
+    }[];
   };
   homeServices?: {
     tagline: string;
@@ -223,7 +234,6 @@ export interface SiteContent {
 }
 
 const CONTENT_PATH = path.join(process.cwd(), "server", "data", "content.json");
-const BLOG_POSTS_PATH = path.join(process.cwd(), "server", "data", "blog-posts.json");
 
 export function getContent(): SiteContent | null {
   try {
@@ -241,15 +251,6 @@ export function getCareersJobs(): CareersJob[] {
       "utf-8"
     );
     return (JSON.parse(raw) as CareersJob[]).map(enrichCareersJob);
-  } catch {
-    return [];
-  }
-}
-
-export function getBlogPosts(): unknown[] {
-  try {
-    const raw = fs.readFileSync(BLOG_POSTS_PATH, "utf-8");
-    return JSON.parse(raw) as unknown[];
   } catch {
     return [];
   }

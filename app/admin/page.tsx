@@ -21,11 +21,10 @@ type SidebarGroup = {
 };
 
 const sidebarGroups: SidebarGroup[] = [
-  { label: "Homepage", items: [{ label: "Hero Section", id: "home-hero" }, { label: "About Section", id: "home-about" }, { label: "Blog Section", id: "home-blog" }, { label: "Our Services Section", id: "home-our-services" }, { label: "Industries Section", id: "home-industries" }, { label: "Logo Marquee", id: "home-marquee" }] },
+  { label: "Homepage", items: [{ label: "Hero Section", id: "home-hero" }, { label: "About Section", id: "home-about" }, { label: "Our Services Section", id: "home-our-services" }, { label: "Industries Section", id: "home-industries" }, { label: "Logo Marquee", id: "home-marquee" }] },
   { label: "Industries", items: [{ label: "Industries Details", id: "industries-details" }] },
+  { label: "Projects Page", items: [{ label: "Hero Section", id: "projects-hero" }, { label: "Industries", id: "projects-industries" }] },
   { label: "About Page", items: [{ label: "Hero Section", id: "about-hero-content" }, { label: "Intro Section", id: "about-intro-section" }, { label: "Journey Timeline", id: "about-journey-timeline" }, { label: "Dimensions", id: "about-dimensions" }, { label: "Our Team", id: "about-team" }, { label: "Achievements", id: "about-achievements" }, { label: "Requirement Form", id: "about-requirement" }] },
-  { label: "Blog Page", items: [{ label: "Page Header", id: "blog-header" }] },
-  { label: "Blog Posts", items: [] },
   { label: "Contact Page", items: [{ label: "Contact Info", id: "contact" }, { label: "Form Submissions", id: "contact-submissions" }] },
   { label: "Careers Page", items: [{ label: "Hero Section", id: "careers-hero" }, { label: "Why Work at Galler", id: "careers-why-work" }, { label: "Life at Galler", id: "careers-life" }, { label: "Openings Sidebar", id: "careers-openings-sidebar" }, { label: "Hiring Process", id: "careers-hiring" }, { label: "Job Openings", id: "careers-jobs" }, { label: "General Resumes", id: "careers-resumes" }, { label: "Job Applications", id: "careers-applications" }] },
   { label: "Footer", items: [{ label: "Footer Content", id: "footer" }] },
@@ -33,22 +32,6 @@ const sidebarGroups: SidebarGroup[] = [
 
 /* ─── Types ───────────────────────────────────────────────────────────── */
 type ContentData = Record<string, Record<string, unknown>>;
-
-interface BlogPostData {
-  id: string;
-  slug: string;
-  category: string;
-  date: string;
-  title: string;
-  subtitle: string;
-  heroImage?: string;
-  featured?: boolean;
-  content?: {
-    type: string;
-    text?: string;
-    items?: string[];
-  }[];
-}
 
 interface ContactSubmission {
   id: string;
@@ -132,7 +115,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("dashboard");
   const [content, setContent] = useState<ContentData>({});
-  const [blogPosts, setBlogPosts] = useState<BlogPostData[]>([]);
   const [contactSubmissions, setContactSubmissions] = useState<ContactSubmission[]>([]);
   const [resumeSubmissions, setResumeSubmissions] = useState<ResumeSubmission[]>([]);
   const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
@@ -154,19 +136,21 @@ export default function AdminDashboard() {
   const [uploadingCareersGalleryIndex, setUploadingCareersGalleryIndex] = useState<number | null>(null);
   const [uploadingIndustryIndex, setUploadingIndustryIndex] = useState<number | null>(null);
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>("");
+  const [selectedProjectIndustryId, setSelectedProjectIndustryId] = useState<string>("");
   const [uploadingProductImageKey, setUploadingProductImageKey] = useState<string | null>(null);
   const [uploadingProductGalleryKey, setUploadingProductGalleryKey] = useState<string | null>(null);
   const [uploadingRequirementBg, setUploadingRequirementBg] = useState(false);
   const [uploadingTeamMemberIndex, setUploadingTeamMemberIndex] = useState<number | null>(null);
+  const [uploadingProjectsHeroImage, setUploadingProjectsHeroImage] = useState(false);
+  const [uploadingProjectIndustryIndex, setUploadingProjectIndustryIndex] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({
     Homepage: true,
+    Industries: true,
+    "Projects Page": false,
     "About Page": false,
-    "Blog Page": false,
-    "Blog Posts": false,
     "Contact Page": false,
     "Careers Page": false,
     Footer: false,
-    Industries: true,
   });
 
   const getToken = () => localStorage.getItem("galler_admin_token");
@@ -226,12 +210,8 @@ export default function AdminDashboard() {
 
   const fetchAll = useCallback(async () => {
     try {
-      const [contentRes, bpRes] = await Promise.all([
-        fetch(`${API_URL}/api/content`),
-        fetch(`${API_URL}/api/blog-posts`),
-      ]);
+      const contentRes = await fetch(`${API_URL}/api/content`);
       if (contentRes.ok) setContent(await contentRes.json());
-      if (bpRes.ok) setBlogPosts(await bpRes.json());
     } catch {
       console.error("Failed to fetch data");
     } finally {
@@ -444,18 +424,17 @@ export default function AdminDashboard() {
     try {
       if (activeSection === "home-hero") await saveContentSection("hero");
       else if (activeSection === "home-about") await saveContentSection("about");
-      else if (activeSection === "home-blog") await saveContentSection("homeBlog");
       else if (activeSection === "home-our-services") await saveContentSection("homeServices");
       else if (activeSection === "home-industries") await saveContentSection("homeIndustries");
       else if (activeSection === "industries-details") await saveContentSection("homeIndustries");
+      else if (activeSection === "projects-hero") await saveContentSection("projectsPage");
+      else if (activeSection === "projects-industries") await saveContentSection("projectsPage");
       else if (activeSection === "home-marquee") await saveContentSection("marquee");
       else if (activeSection === "about-hero-content") await saveContentSection("about");
       else if (activeSection.startsWith("about-")) await saveContentSection("aboutPage");
       else if (activeSection === "contact") await saveContentSection("contactPage");
       else if (activeSection.startsWith("careers-") && !["careers-jobs", "careers-resumes", "careers-applications"].includes(activeSection)) await saveContentSection("careersPage");
-      else if (activeSection === "blog-header") await saveContentSection("blogPage");
       else if (activeSection === "footer") await saveContentSection("footer");
-      else if (activeSection.startsWith("blog-post-") || activeSection === "blog-posts-list") await saveBlogPosts(token);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {
@@ -472,26 +451,6 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify(content[section]),
     });
-  };
-
-  const persistBlogPosts = async (posts: BlogPostData[], token?: string | null) => {
-    const authToken = token ?? getToken();
-    if (!authToken) throw new Error("Not authenticated");
-
-    const res = await fetch(`${API_URL}/api/blog-posts`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${authToken}` },
-      body: JSON.stringify(posts),
-    });
-
-    if (!res.ok) {
-      const data = (await res.json().catch(() => null)) as { message?: string } | null;
-      throw new Error(data?.message || "Failed to save blog posts");
-    }
-  };
-
-  const saveBlogPosts = async (token: string) => {
-    await persistBlogPosts(blogPosts, token);
   };
 
   const handleLogout = () => {
@@ -618,46 +577,6 @@ export default function AdminDashboard() {
     }
 
     setContent((prev) => ({ ...prev, marquee: { logos } }));
-  };
-
-  const slugify = (text: string) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-
-  const addBlogPost = () => {
-    const id = String(Date.now());
-    const newPost: BlogPostData = {
-      id,
-      slug: `new-post-${id}`,
-      category: "General",
-      date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      title: "New Blog Post",
-      subtitle: "",
-      heroImage: "",
-      featured: false,
-      content: [{ type: "paragraph", text: "" }],
-    };
-    setBlogPosts((prev) => [newPost, ...prev]);
-    setActiveSection(`blog-post-${id}`);
-  };
-
-  const deleteBlogPost = async (id: string) => {
-    if (!confirm("Delete this blog post?")) return;
-
-    const updated = blogPosts.filter((p) => p.id !== id);
-    setBlogPosts(updated);
-    if (activeSection === `blog-post-${id}`) setActiveSection("blog-posts-list");
-
-    try {
-      await persistBlogPosts(updated);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch {
-      alert("Could not save deletion. Click Save Changes to retry.");
-    }
   };
 
   const uploadHeroVideo = async (file: File): Promise<string | null> => {
@@ -937,20 +856,6 @@ export default function AdminDashboard() {
       </div>
     );
   };
-
-  const renderHomeBlog = () => (
-    <div className="flex flex-col gap-6">
-      <h2 className="text-2xl font-bold text-[#1a1a1a]">Blog Section</h2>
-      <p className="text-sm text-gray-500">Controls the heading and labels shown in the homepage blog preview.</p>
-      <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
-        {renderField("homeBlog", "tagline", "Tagline")}
-        {renderField("homeBlog", "heading", "Heading")}
-        {renderField("homeBlog", "headingHighlight", "Highlighted Word")}
-        {renderField("homeBlog", "ctaText", "View All Blogs Button Text")}
-        {renderField("homeBlog", "readMoreText", "Read More Button Text")}
-      </div>
-    </div>
-  );
 
   const renderHomeOurServices = () => {
     type Category = { id: string; number: number; title: string; icon: string; items: string[] };
@@ -2271,285 +2176,478 @@ export default function AdminDashboard() {
     );
   };
 
-  const renderBlogHeader = () => (
-    <div className="flex flex-col gap-6">
-      <h2 className="text-2xl font-bold text-[#1a1a1a]">Blog Page — Header</h2>
-      <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
-        {renderField("blogPage", "heading", "Page Heading")}
-        {renderField("blogPage", "tagline", "Tagline")}
-      </div>
-    </div>
-  );
-
-  const renderBlogPostsList = () => (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-[#1a1a1a]">Blog Posts</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Add posts with a cover photo and title. The 3 newest appear on the homepage. Deletions save automatically.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={addBlogPost}
-          className="rounded-xl bg-[var(--primary-orange)] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#b8451a]"
-        >
-          + Add Post
-        </button>
-      </div>
-
-      {blogPosts.length === 0 ? (
-        <div className="rounded-2xl bg-white p-10 text-center text-gray-400 shadow-sm">
-          No blog posts yet. Click &quot;Add Post&quot; to create one.
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {blogPosts.map((post, index) => (
-            <div
-              key={post.id}
-              className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm"
-            >
-              <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                {post.heroImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={resolvePreviewSrc(post.heroImage)}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-gray-400">
-                    No cover
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-[#1a1a1a]">{post.title}</p>
-                <p className="text-xs text-gray-400">
-                  {post.category} · {post.date}
-                  {index < 3 ? " · Shows on homepage" : ""}
-                  {post.featured ? " · Featured" : ""}
-                </p>
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setActiveSection(`blog-post-${post.id}`)}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:border-[var(--primary-orange)] hover:text-[var(--primary-orange)]"
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  onClick={() => deleteBlogPost(post.id)}
-                  className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-500 hover:bg-red-50"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-
-  const renderBlogPost = (sectionId: string) => {
-    const postId = sectionId.replace("blog-post-", "");
-    const idx = blogPosts.findIndex((p) => p.id === postId);
-    const post = blogPosts[idx];
-    if (!post) return <p className="text-gray-400">Blog post not found.</p>;
-
-    const updatePost = (updates: Partial<BlogPostData>) => {
-      setBlogPosts((prev) => {
-        const next = [...prev];
-        next[idx] = { ...next[idx], ...updates };
-        return next;
-      });
-    };
-
-    const updateParagraph = (pi: number, text: string) => {
-      let paragraphIndex = 0;
-      const contentBlocks = (post.content || [{ type: "paragraph", text: "" }]).map((block) => {
-        if (block.type !== "paragraph") return block;
-        if (paragraphIndex === pi) {
-          paragraphIndex++;
-          return { type: "paragraph", text };
-        }
-        paragraphIndex++;
-        return block;
-      });
-      updatePost({ content: contentBlocks });
-    };
-
-    const paragraphs = (post.content || []).filter((b) => b.type === "paragraph");
+  const renderProjectsHero = () => {
+    const projectsPage = (content.projectsPage as Record<string, unknown>) ?? {};
+    const hero = (projectsPage.hero as Record<string, unknown>) ?? {};
+    const backgroundImage = String(hero.backgroundImage ?? "");
 
     return (
       <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-[#1a1a1a]">Edit Blog Post</h2>
-          <button
-            type="button"
-            onClick={() => setActiveSection("blog-posts-list")}
-            className="text-sm text-gray-500 hover:text-[var(--primary-orange)]"
-          >
-            ← Back to all posts
-          </button>
-        </div>
-
+        <h2 className="text-2xl font-bold text-[#1a1a1a]">Projects Page — Hero Section</h2>
         <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-3 rounded-xl border-2 border-dashed border-gray-200 p-6">
-            <p className="text-sm font-semibold text-gray-700">Cover Photo</p>
-            <p className="text-xs text-gray-500">Shown on the homepage cards and /blog listing.</p>
-            {post.heroImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={resolvePreviewSrc(post.heroImage)}
-                alt="Cover preview"
-                className="mx-auto h-40 w-full max-w-md rounded-lg object-cover"
-              />
-            ) : null}
-            <label className="mx-auto cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-              {post.heroImage ? "Change cover photo" : "Upload cover photo"}
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  try {
-                    const url = await uploadImage(file);
-                    updatePost({ heroImage: url });
-                  } catch (err) {
-                    alert(err instanceof Error ? err.message : "Upload failed");
-                  } finally {
-                    e.target.value = "";
-                  }
-                }}
-              />
-            </label>
-            {post.heroImage ? (
-              <button
-                type="button"
-                onClick={() => updatePost({ heroImage: "" })}
-                className="mx-auto text-xs text-red-500 hover:underline"
-              >
-                Remove cover photo
-              </button>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">Title</label>
-            <input
-              type="text"
-              value={post.title}
-              onChange={(e) => {
-                const title = e.target.value;
-                const updates: Partial<BlogPostData> = { title };
-                if (post.slug.startsWith("new-post-") || post.slug === slugify(post.title)) {
-                  updates.slug = slugify(title) || post.slug;
-                }
-                updatePost(updates);
-              }}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">Slug (URL)</label>
-              <input
-                type="text"
-                value={post.slug}
-                onChange={(e) => updatePost({ slug: slugify(e.target.value) })}
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
-              />
-            </div>
-            <div className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">Category</label>
-              <input
-                type="text"
-                value={post.category}
-                onChange={(e) => updatePost({ category: e.target.value })}
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">Date</label>
-              <input
-                type="text"
-                value={post.date}
-                onChange={(e) => updatePost({ date: e.target.value })}
-                placeholder="Jan 6, 2026"
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
-              />
-            </div>
-            <div className="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <input
-                id={`featured-${post.id}`}
-                type="checkbox"
-                checked={!!post.featured}
-                onChange={(e) => updatePost({ featured: e.target.checked })}
-                className="h-4 w-4 accent-[var(--primary-orange)]"
-              />
-              <label htmlFor={`featured-${post.id}`} className="text-sm text-gray-700">
-                Featured post (special layout on /blog)
-              </label>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-            <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">Subtitle / Excerpt</label>
-            <textarea
-              value={post.subtitle}
-              onChange={(e) => updatePost({ subtitle: e.target.value })}
-              rows={3}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
-            />
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-semibold text-gray-700">Article Content</h3>
-            {(paragraphs.length ? paragraphs : [{ type: "paragraph", text: "" }]).map((block, pi) => (
-              <div key={pi} className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-                <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
-                  Paragraph {pi + 1}
-                </label>
-                <textarea
-                  value={block.text || ""}
-                  onChange={(e) => updateParagraph(pi, e.target.value)}
-                  rows={4}
-                  className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
+            <p className="text-sm font-semibold text-gray-700">Hero Background Image</p>
+            <p className="text-xs text-gray-500">This image will be shown as the background of the projects page hero section.</p>
+            {backgroundImage ? (
+              <div className="relative h-40 w-full overflow-hidden rounded-lg">
+                <img
+                  src={backgroundImage.startsWith("/uploads/") ? `${API_URL}${backgroundImage}` : backgroundImage}
+                  alt="Hero background"
+                  className="h-full w-full object-cover"
                 />
               </div>
-            ))}
+            ) : (
+              <div className="flex h-40 w-full items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
+                No background image
+              </div>
+            )}
+            <p className="truncate text-xs text-gray-400">
+              {backgroundImage || "No image set — gradient background will show as fallback"}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label
+                className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProjectsHeroImage ? "pointer-events-none opacity-50" : ""}`}
+              >
+                {uploadingProjectsHeroImage ? "Uploading…" : backgroundImage ? "Replace image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/jpg"
+                  className="hidden"
+                  disabled={uploadingProjectsHeroImage}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploadingProjectsHeroImage(true);
+                    try {
+                      const url = await uploadImage(file);
+                      setContent((prev) => ({
+                        ...prev,
+                        projectsPage: {
+                          ...(prev.projectsPage as Record<string, unknown>),
+                          hero: {
+                            ...((prev.projectsPage as Record<string, unknown>)?.hero as Record<string, unknown>),
+                            backgroundImage: url,
+                          },
+                        },
+                      }));
+                      await saveContentSection("projectsPage");
+                      setSaved(true);
+                      setTimeout(() => setSaved(false), 2000);
+                    } catch (err) {
+                      alert(err instanceof Error ? err.message : "Upload failed");
+                    } finally {
+                      setUploadingProjectsHeroImage(false);
+                      e.target.value = "";
+                    }
+                  }}
+                />
+              </label>
+              {backgroundImage && (
+                <button
+                  type="button"
+                  disabled={uploadingProjectsHeroImage}
+                  onClick={async () => {
+                    setContent((prev) => ({
+                      ...prev,
+                      projectsPage: {
+                        ...(prev.projectsPage as Record<string, unknown>),
+                        hero: {
+                          ...((prev.projectsPage as Record<string, unknown>)?.hero as Record<string, unknown>),
+                          backgroundImage: "",
+                        },
+                      },
+                    }));
+                    try {
+                      await saveContentSection("projectsPage");
+                      setSaved(true);
+                      setTimeout(() => setSaved(false), 2000);
+                    } catch (err) {
+                      alert(err instanceof Error ? err.message : "Failed to remove image");
+                    }
+                  }}
+                  className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                >
+                  Remove image
+                </button>
+              )}
+            </div>
+          </div>
+          {renderField("projectsPage", "hero.heading", "Heading", false, ["hero", "heading"])}
+          {renderField("projectsPage", "hero.subtitle", "Subtitle", true, ["hero", "subtitle"])}
+          {renderField("projectsPage", "hero.ctaText", "Button Text", false, ["hero", "ctaText"])}
+        </div>
+      </div>
+    );
+  };
+
+  const renderProjectsIndustries = () => {
+    type Project = { id: string; name: string; features?: string[]; image?: string };
+    type Industry = {
+      id: string;
+      slug?: string;
+      name: string;
+      icon?: string;
+      image?: string;
+      projects?: Project[];
+    };
+
+    const projectsPage = (content.projectsPage as Record<string, unknown>) ?? {};
+    const industries = (projectsPage.industries as Industry[]) ?? [];
+
+    const updateIndustries = (next: Industry[]) => {
+      setContent((p) => ({
+        ...p,
+        projectsPage: { ...(p.projectsPage as Record<string, unknown>), industries: next },
+      }));
+    };
+
+    const activeProjectIndustryId = selectedProjectIndustryId || industries[0]?.id || "";
+    const selectedIndustry = industries.find((i) => i.id === activeProjectIndustryId);
+    const projects = selectedIndustry?.projects ?? [];
+
+    const updateProjects = (next: Project[]) => {
+      const nextIndustries = industries.map((i) =>
+        i.id === activeProjectIndustryId ? { ...i, projects: next } : i
+      );
+      updateIndustries(nextIndustries);
+    };
+
+    const resolvePreviewSrc = (src: string) => {
+      if (src.startsWith("/uploads/")) return `${API_URL}${src}`;
+      return src;
+    };
+
+    return (
+      <div className="flex flex-col gap-6">
+        <h2 className="text-2xl font-bold text-[#1a1a1a]">Projects Page — Industries & Projects</h2>
+
+        {/* Industries List */}
+        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-700">Industries</h3>
             <button
               type="button"
               onClick={() =>
-                updatePost({
-                  content: [...(post.content || []), { type: "paragraph", text: "" }],
-                })
+                updateIndustries([
+                  ...industries,
+                  {
+                    id: String(Date.now()),
+                    slug: "",
+                    name: "NEW INDUSTRY",
+                    icon: "",
+                    image: "",
+                    projects: [],
+                  },
+                ])
               }
-              className="self-start rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:border-[var(--primary-orange)] hover:text-[var(--primary-orange)]"
+              className="rounded-lg bg-[var(--primary-orange)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b8451a]"
             >
-              + Add paragraph
+              + Add Industry
             </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => deleteBlogPost(post.id)}
-            className="self-start rounded-lg border border-red-200 px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-          >
-            Delete this post
-          </button>
+          {industries.length === 0 ? (
+            <p className="text-sm text-gray-400">No industries added yet</p>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {industries.map((industry, i) => (
+                <div
+                  key={industry.id}
+                  className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
+                >
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="mb-1 block text-xs font-medium text-gray-500">Industry Name</label>
+                      <input
+                        type="text"
+                        value={industry.name}
+                        onChange={(e) => {
+                          const next = [...industries];
+                          next[i] = { ...next[i], name: e.target.value };
+                          updateIndustries(next);
+                        }}
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
+                        placeholder="Industry name"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Delete ${industry.name}?`)) {
+                          updateIndustries(industries.filter((_, idx) => idx !== i));
+                        }
+                      }}
+                      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-medium text-gray-500">
+                      Card & Hero Background Image
+                    </label>
+                    <p className="text-xs text-gray-400">
+                      Shown on the industry card and as the hero background when that industry is opened.
+                    </p>
+                    <div className="flex flex-wrap items-start gap-4">
+                      <div className="h-24 w-40 shrink-0 overflow-hidden rounded-lg bg-gray-200">
+                        {industry.image ? (
+                          <img
+                            src={resolvePreviewSrc(industry.image)}
+                            alt={industry.name}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                            No image
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <label
+                          className={`cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProjectIndustryIndex === i ? "pointer-events-none opacity-50" : ""}`}
+                        >
+                          {uploadingProjectIndustryIndex === i
+                            ? "Uploading…"
+                            : industry.image
+                              ? "Replace image"
+                              : "Upload image"}
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp,image/jpg"
+                            className="hidden"
+                            disabled={uploadingProjectIndustryIndex === i}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              setUploadingProjectIndustryIndex(i);
+                              try {
+                                const url = await uploadImage(file);
+                                const next = [...industries];
+                                next[i] = { ...next[i], image: url };
+                                updateIndustries(next);
+                              } catch (err) {
+                                alert(err instanceof Error ? err.message : "Upload failed");
+                              } finally {
+                                setUploadingProjectIndustryIndex(null);
+                                e.target.value = "";
+                              }
+                            }}
+                          />
+                        </label>
+                        {industry.image ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const next = [...industries];
+                              next[i] = { ...next[i], image: "" };
+                              updateIndustries(next);
+                            }}
+                            className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+                          >
+                            Remove
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Projects Management */}
+        {industries.length > 0 && (
+          <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-gray-700">Manage Projects</h3>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <label className="text-xs font-medium text-gray-500">Select Industry</label>
+              <select
+                value={activeProjectIndustryId}
+                onChange={(e) => setSelectedProjectIndustryId(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
+              >
+                {industries.map((ind) => (
+                  <option key={ind.id} value={ind.id}>
+                    {ind.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <hr className="border-gray-100" />
+
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-700">
+                Projects in {selectedIndustry?.name ?? "Industry"}
+              </h4>
+              <button
+                type="button"
+                onClick={() =>
+                  updateProjects([
+                    ...projects,
+                    {
+                      id: String(Date.now()),
+                      name: "New Project",
+                      features: [""],
+                      image: "",
+                    },
+                  ])
+                }
+                className="rounded-lg bg-[var(--primary-orange)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b8451a]"
+              >
+                + Add Project
+              </button>
+            </div>
+
+            {projects.length === 0 ? (
+              <p className="text-sm text-gray-400">No projects added yet</p>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {projects.map((project, pi) => {
+                  const uploadKey = `project-${activeProjectIndustryId}-${pi}`;
+                  return (
+                    <div
+                      key={project.id}
+                      className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="h-24 w-32 shrink-0 overflow-hidden rounded-lg bg-gray-200">
+                          {project.image ? (
+                            <img
+                              src={resolvePreviewSrc(project.image)}
+                              alt={project.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-xs text-gray-400">
+                              No image
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 space-y-3">
+                          <input
+                            type="text"
+                            value={project.name}
+                            onChange={(e) => {
+                              const next = [...projects];
+                              next[pi] = { ...next[pi], name: e.target.value };
+                              updateProjects(next);
+                            }}
+                            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
+                            placeholder="Project name"
+                          />
+
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <label className="text-xs font-medium text-gray-500">Features (Bullet Points)</label>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = [...projects];
+                                  next[pi] = { 
+                                    ...next[pi], 
+                                    features: [...(next[pi].features ?? []), ""] 
+                                  };
+                                  updateProjects(next);
+                                }}
+                                className="text-xs font-medium text-primary hover:underline"
+                              >
+                                + Add Feature
+                              </button>
+                            </div>
+                            
+                            {(project.features ?? []).map((feature, fi) => (
+                              <div key={fi} className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={feature}
+                                  onChange={(e) => {
+                                    const next = [...projects];
+                                    const features = [...(next[pi].features ?? [])];
+                                    features[fi] = e.target.value;
+                                    next[pi] = { ...next[pi], features };
+                                    updateProjects(next);
+                                  }}
+                                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
+                                  placeholder="Feature description"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const next = [...projects];
+                                    const features = (next[pi].features ?? []).filter((_, idx) => idx !== fi);
+                                    next[pi] = { ...next[pi], features };
+                                    updateProjects(next);
+                                  }}
+                                  className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="flex flex-wrap gap-2">
+                            <label
+                              className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProductImageKey === uploadKey ? "pointer-events-none opacity-50" : ""}`}
+                            >
+                              {uploadingProductImageKey === uploadKey
+                                ? "Uploading…"
+                                : project.image
+                                  ? "Replace image"
+                                  : "Upload image"}
+                              <input
+                                type="file"
+                                accept="image/png,image/jpeg,image/webp,image/jpg"
+                                className="hidden"
+                                disabled={uploadingProductImageKey === uploadKey}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  setUploadingProductImageKey(uploadKey);
+                                  try {
+                                    const url = await uploadImage(file);
+                                    const next = [...projects];
+                                    next[pi] = { ...next[pi], image: url };
+                                    updateProjects(next);
+                                  } catch (err) {
+                                    alert(err instanceof Error ? err.message : "Upload failed");
+                                  } finally {
+                                    setUploadingProductImageKey(null);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (confirm(`Delete ${project.name}?`)) {
+                                  updateProjects(projects.filter((_, idx) => idx !== pi));
+                                }
+                              }}
+                              className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -3690,7 +3788,7 @@ export default function AdminDashboard() {
         {[
           { label: "Pages Managed", value: "7", color: "bg-blue-50 text-blue-600" },
           { label: "Industries", value: String(((content.homeIndustries as Record<string, unknown>)?.items as unknown[])?.length ?? 0), color: "bg-green-50 text-green-600" },
-          { label: "Blog Posts", value: String(blogPosts.length), color: "bg-purple-50 text-purple-600" },
+          { label: "Job Openings", value: String(careersJobs.length), color: "bg-purple-50 text-purple-600" },
         ].map((stat) => (
           <div key={stat.label} className="rounded-xl bg-white p-6 shadow-sm">
             <p className="text-xs font-medium text-gray-500">{stat.label}</p>
@@ -3720,7 +3818,6 @@ export default function AdminDashboard() {
     if (activeSection === "dashboard") return renderDashboard();
     if (activeSection === "home-hero") return renderHomeHero();
     if (activeSection === "home-about") return renderHomeAbout();
-    if (activeSection === "home-blog") return renderHomeBlog();
     if (activeSection === "home-our-services") return renderHomeOurServices();
     if (activeSection === "home-industries") return renderHomeIndustries();
     if (activeSection === "industries-details") return renderIndustriesDetails();
@@ -3732,9 +3829,8 @@ export default function AdminDashboard() {
     if (activeSection === "about-team") return renderAboutTeam();
     if (activeSection === "about-achievements") return renderAboutAchievements();
     if (activeSection === "about-requirement") return renderAboutRequirement();
-    if (activeSection === "blog-header") return renderBlogHeader();
-    if (activeSection === "blog-posts-list") return renderBlogPostsList();
-    if (activeSection.startsWith("blog-post-")) return renderBlogPost(activeSection);
+    if (activeSection === "projects-hero") return renderProjectsHero();
+    if (activeSection === "projects-industries") return renderProjectsIndustries();
     if (activeSection === "contact") return renderContact();
     if (activeSection === "contact-submissions") return renderContactSubmissions();
     if (activeSection === "careers-hero") return renderCareersHero();
@@ -3772,19 +3868,7 @@ export default function AdminDashboard() {
 
           {/* Groups */}
           {sidebarGroups.map((group) => {
-            const items =
-              group.label === "Blog Posts"
-                ? [
-                    { id: "blog-posts-list", label: "All Posts" },
-                    ...blogPosts.map((post) => ({
-                      id: `blog-post-${post.id}`,
-                      label:
-                        post.title.length > 26
-                          ? `${post.title.slice(0, 26)}…`
-                          : post.title || "Untitled",
-                    })),
-                  ]
-                : group.items;
+            const items = group.items;
 
             return (
             <div key={group.label} className="mt-2">

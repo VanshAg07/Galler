@@ -85,13 +85,14 @@ export default function AboutAchievementsContact({
         </div>
       </div>
 
-      <div className="relative min-h-[420px] overflow-hidden sm:min-h-[480px]">
+      <div className="relative min-h-[420px] sm:min-h-[480px]">
         {formBackgroundImage ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={resolveUploadSrc(formBackgroundImage)}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover object-center"
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url(${resolveUploadSrc(formBackgroundImage)})`,
+              backgroundAttachment: "fixed",
+            }}
           />
         ) : (
           <div className="absolute inset-0 bg-linear-to-br from-[#4a6a8a] via-[#2a4a6a] to-[#1a3050]" />

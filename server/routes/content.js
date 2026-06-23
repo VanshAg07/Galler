@@ -47,23 +47,4 @@ router.put('/:section', authMiddleware, (req, res) => {
   res.json({ message: `Section "${section}" updated`, data: content[section] });
 });
 
-/* ──────────────────────────────────────────────────────────
-   Blog-posts routes (blog-posts.json)
-────────────────────────────────────────────────────────── */
-const blogPostsRouter = express.Router();
-
-blogPostsRouter.get('/', (req, res) => {
-  const data = readJSON('blog-posts.json');
-  if (!data) return res.status(500).json({ message: 'blog-posts.json not found' });
-  res.json(data);
-});
-
-blogPostsRouter.put('/', authMiddleware, (req, res) => {
-  if (!Array.isArray(req.body)) {
-    return res.status(400).json({ message: 'Body must be an array' });
-  }
-  writeJSON('blog-posts.json', req.body);
-  res.json({ message: 'blog-posts updated' });
-});
-
-module.exports = { contentRouter: router, blogPostsRouter };
+module.exports = router;

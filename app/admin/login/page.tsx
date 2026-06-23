@@ -19,9 +19,9 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      if (!API_URL) {
+      if (!process.env.NEXT_PUBLIC_API_URL && process.env.NODE_ENV === "production") {
         setError(
-          "API URL is not configured. Set NEXT_PUBLIC_API_URL on Vercel to your Render backend URL."
+          "Set NEXT_PUBLIC_API_URL in Vercel to your Render backend URL, then redeploy."
         );
         setLoading(false);
         return;

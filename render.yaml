@@ -6,7 +6,7 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
-      - key: FRONTEND_URL
-        value: https://galler-pi.vercel.app
       - key: JWT_SECRET
         generateValue: true
+      - key: FRONTEND_URL
+        sync: false

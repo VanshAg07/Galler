@@ -35,10 +35,12 @@ const videoFilter = (req, file, cb) => {
   }
 };
 
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const uploadImage = multer({
   storage,
   fileFilter: imageFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: MAX_IMAGE_SIZE }
 });
 
 const uploadVideo = multer({
@@ -51,7 +53,7 @@ router.post('/', authMiddleware, (req, res) => {
   uploadImage.single('image')(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       if (err.code === 'LIMIT_FILE_SIZE') {
-        return res.status(400).json({ message: 'File too large. Max size is 5MB.' });
+        return res.status(400).json({ message: 'File too large. Max size is 10MB.' });
       }
       return res.status(400).json({ message: err.message });
     }

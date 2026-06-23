@@ -6,7 +6,7 @@ const path = require('path');
 const seed = require('./seed');
 
 const authRoutes = require('./routes/auth');
-const { contentRouter, blogPostsRouter } = require('./routes/content');
+const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
 const contactRoutes = require('./routes/contact');
 const careersRoutes = require('./routes/careers');
@@ -46,8 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/content', contentRouter);
-app.use('/api/blog-posts', blogPostsRouter);
+app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/careers', careersRoutes);

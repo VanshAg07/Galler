@@ -9,8 +9,8 @@ type Props = { content?: SiteContent["footer"] };
 const footerLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Our Projects", href: "/projects" },
   { label: "Careers", href: "/careers" },
-  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
 
