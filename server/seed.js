@@ -17,12 +17,22 @@ async function seed() {
           name: 'Admin',
           role: 'admin',
           createdAt: new Date().toISOString()
+        },
+        {
+          id: '2',
+          email: 'admin@gmail.com',
+          password: hashedPassword,
+          name: 'Admin',
+          role: 'admin',
+          createdAt: new Date().toISOString()
         }
       ]
     };
 
     writeJSON('admin.json', adminData);
-    console.log('✓ Default admin user created (admin@galler.com / admin123)');
+    console.log('✓ Default admin users created:');
+    console.log('  - admin@galler.com / admin123');
+    console.log('  - admin@gmail.com / admin123');
   }
 
   if (!exists('content.json')) {
