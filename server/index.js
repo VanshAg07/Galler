@@ -14,10 +14,11 @@ const careersRoutes = require('./routes/careers');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Allow all origins with credentials support
+// Allow all origins
 app.use(cors({
-  origin: true, // Allows all origins
-  credentials: true,
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
 app.use(express.json());
