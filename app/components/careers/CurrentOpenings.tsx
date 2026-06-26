@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   enrichCareersJob,
   INITIAL_VISIBLE_JOB_POINTS,
@@ -10,9 +11,13 @@ import {
 } from "@/app/lib/careers-data";
 import ApplyJobModal from "./ApplyJobModal";
 import SubmitResumeModal from "./SubmitResumeModal";
+import { TextAnimate } from "@/registry/magicui/text-animate";
 
 import { API_URL } from "@/app/lib/apiUrl";
 const categories = JOB_CATEGORIES;
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 function JobIcon({ category }: { category: JobCategory }) {
   const icons = {
@@ -103,18 +108,31 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
   return (
     <section id="openings" className="bg-white py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <h2 className="font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+        <TextAnimate
+          as="h2"
+          animation="slideRight"
+          by="character"
+          once
+          duration={0.9}
+          className="font-cinzel text-[27px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[40px]"
+        >
           CURRENT OPENINGS
-        </h2>
+        </TextAnimate>
 
         <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[2fr_1fr]">
           <div>
-            <div className="flex flex-wrap gap-3">
+            <motion.div
+              className="flex flex-wrap gap-3"
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.08 }}
+            >
               {categories.map((cat) => (
                 <button
                   key={cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`rounded-md px-5 py-2 text-sm font-semibold transition-colors ${
+                  className={`rounded-md px-5 py-2 font-century text-[15px] font-semibold transition-colors ${
                     activeCategory === cat.id
                       ? "bg-[#0b1f4a] text-white"
                       : "border border-[#ddd] bg-white text-[#4a4a4a] hover:border-[#0b1f4a]"
@@ -123,20 +141,35 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                   {cat.label}
                 </button>
               ))}
-            </div>
+            </motion.div>
 
             <div className="mt-8 space-y-6">
               {filteredJobs.length === 0 ? (
-                <div className="rounded-lg border border-[#e5e5e5] p-8 text-center text-sm text-[#666]">
+                <motion.div
+                  className="rounded-lg border border-[#e5e5e5] p-8 text-center font-century text-[15px] text-[#666]"
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={viewport}
+                  transition={{ duration: 0.55, ease: entryEase }}
+                >
                   No openings in this category right now.
-                </div>
+                </motion.div>
               ) : (
-                filteredJobs.map((job) => (
-                  <div key={job.id} className="flex gap-4 rounded-lg border border-[#e5e5e5] p-6">
+                filteredJobs.map((job, index) => (
+                  <motion.div
+                    key={job.id}
+                    className="flex gap-4 rounded-lg border border-[#e5e5e5] p-6"
+                    initial={{ opacity: 0, x: -40 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={viewport}
+                    transition={{ duration: 0.55, ease: entryEase, delay: index * 0.08 }}
+                  >
                     <JobIcon category={job.category} />
                     <div className="flex-1">
-                      <h3 className="text-base font-bold text-[#0b1f4a]">{job.title}</h3>
-                      <div className="mt-2 flex flex-wrap gap-4 text-sm text-[#666]">
+                      <h3 className="font-cinzel text-[20px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]">
+                        {job.title}
+                      </h3>
+                      <div className="mt-2 flex flex-wrap gap-4 font-century text-[15px] text-[#666]">
                         <span className="flex items-center gap-1.5">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4z" />
@@ -164,7 +197,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                         </span>
                       </div>
                       {job.descriptionPoints.length > 0 ? (
-                        <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-[#4a4a4a]">
+                        <ul className="mt-3 list-disc space-y-1.5 pl-5 font-century text-[15px] leading-relaxed text-[#4a4a4a]">
                           {(expandedJobId === job.id
                             ? job.descriptionPoints
                             : job.descriptionPoints.slice(0, INITIAL_VISIBLE_JOB_POINTS)
@@ -180,7 +213,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                             onClick={() =>
                               setExpandedJobId((prev) => (prev === job.id ? null : job.id))
                             }
-                            className="rounded-md border border-[#0b1f4a] bg-white px-5 py-2 text-sm font-semibold text-[#0b1f4a] transition-colors hover:bg-[#f8f9fa]"
+                            className="rounded-md border border-[#0b1f4a] bg-white px-5 py-2 font-century text-[15px] font-semibold text-[#0b1f4a] transition-colors hover:bg-[#f8f9fa]"
                           >
                             {expandedJobId === job.id ? "HIDE DETAILS" : "VIEW DETAILS"}
                           </button>
@@ -188,36 +221,52 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                         <button
                           type="button"
                           onClick={() => openApplyModal(job)}
-                          className="rounded-md bg-[#c9a227] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a8871f]"
+                          className="rounded-md bg-[#c9a227] px-5 py-2 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#a8871f]"
                         >
                           APPLY NOW
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))
               )}
             </div>
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-lg bg-[#0b1f4a] p-6 text-white">
-              <h3 className="text-sm font-bold tracking-wider">{sidebar.ctaHeading}</h3>
-              <div className="mt-1 h-0.5 w-12 bg-[#c9a227]" />
-              <p className="mt-4 text-sm leading-relaxed">{sidebar.ctaParagraph1}</p>
-              <p className="mt-2 text-sm leading-relaxed">{sidebar.ctaParagraph2}</p>
+            <motion.div
+              className="rounded-lg bg-[#0b1f4a] p-6 text-white"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.1 }}
+            >
+              <h3 className="font-cinzel text-[25px] font-normal leading-[1.08] tracking-tight">
+                {sidebar.ctaHeading}
+              </h3>
+              {/* <div className="mt-1 h-0.5 w-12 bg-[#c9a227]" /> */}
+              <p className="mt-4 font-century text-[15px] leading-relaxed">{sidebar.ctaParagraph1}</p>
+              <p className="mt-2 font-century text-[15px] leading-relaxed">{sidebar.ctaParagraph2}</p>
               <button
                 type="button"
                 onClick={() => setResumeModalOpen(true)}
-                className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#c9a227] px-5 py-2.5 text-sm font-semibold text-[#c9a227] transition-colors hover:bg-[#c9a227] hover:text-white"
+                className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#c9a227] px-5 py-2.5 font-century text-[15px] font-semibold text-[#c9a227] transition-colors hover:bg-[#c9a227] hover:text-white"
               >
                 {sidebar.ctaButtonText}
               </button>
-            </div>
+            </motion.div>
 
-            <div className="rounded-lg border border-[#e5e5e5] bg-white p-6">
-              <h3 className="text-sm font-bold tracking-wider text-[#0b1f4a]">{sidebar.networkHeading}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-[#4a4a4a]">
+            <motion.div
+              className="rounded-lg border border-[#e5e5e5] bg-white p-6"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.2 }}
+            >
+              <h3 className="font-cinzel text-[25px] lowercase font-normal leading-[1.08] tracking-tight text-[#0b1f4a]">
+                {sidebar.networkHeading}
+              </h3>
+              <p className="mt-3 font-century text-[15px] leading-relaxed text-[#4a4a4a]">
                 {sidebar.networkDescription}
               </p>
               <div className="mt-5 flex gap-2">
@@ -226,7 +275,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 rounded-md border border-[#ddd] px-4 py-2.5 text-sm outline-none focus:border-[#0b1f4a]"
+                  className="flex-1 rounded-md border border-[#ddd] px-4 py-2.5 font-century text-[15px] outline-none focus:border-[#0b1f4a]"
                 />
                 <button className="flex items-center justify-center rounded-md bg-[#c9a227] px-4 py-2.5 text-white transition-colors hover:bg-[#a8871f]">
                   <svg
@@ -243,7 +292,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                   </svg>
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

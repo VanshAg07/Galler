@@ -1,10 +1,16 @@
-import Link from "next/link";
+"use client";
+
+import { motion } from "framer-motion";
+import gImage from "@/Assets/G.png";
 
 interface AboutSectionTwoProps {
   title?: string;
   paragraph1?: string;
   paragraph2?: string;
 }
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 const DEFAULT_TITLE = "WE PUT OUR CLIENT'S REQUIREMENTS IN THE FOREFRONT.";
 const DEFAULT_P1 =
@@ -29,22 +35,44 @@ export default function AboutSectionTwo({
             <span className="font-medium text-[#1a1a1a]">About Us</span>
           </nav> */}
 
-          <h2 className="max-w-2xl text-3xl leading-tight font-medium tracking-wide text-[#1f1f1f] sm:text-4xl">
+          <motion.h2
+            className="max-w-2xl font-cinzel text-[24px] font-normal text-black md:text-[30px]"
+            initial={{ opacity: 0, y: -40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase }}
+          >
             {title}
-          </h2>
+          </motion.h2>
 
-          <div className="mt-6 max-w-2xl space-y-5 text-[1.04rem] leading-relaxed text-[#2e2e2e]">
-            <p>{paragraph1}</p>
-            <p>{paragraph2}</p>
+          <div className="mt-6 max-w-2xl space-y-5">
+            {[paragraph1, paragraph2].map((paragraph, index) => (
+              <motion.p
+                key={index}
+                className="font-century text-[15px] leading-relaxed text-black"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewport}
+                transition={{
+                  duration: 0.6,
+                  ease: entryEase,
+                  delay: index * 0.12,
+                }}
+              >
+                {paragraph}
+              </motion.p>
+            ))}
           </div>
         </div>
 
         <div className="lg:col-span-5 lg:justify-self-center">
           <div className="relative h-52 w-52 sm:h-64 sm:w-64 md:h-72 md:w-72">
-            <div className="absolute inset-0 rounded-full bg-linear-to-br from-[#0f2c5d] via-[#5f6f90] to-[#101a35] opacity-90" />
-            <span className="absolute inset-0 flex items-center justify-center text-[11rem] leading-none font-black text-white mix-blend-screen sm:text-[13rem] md:text-[15rem]">
-              G
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={gImage.src}
+              alt=""
+              className="h-full w-full object-contain"
+            />
           </div>
         </div>
       </div>

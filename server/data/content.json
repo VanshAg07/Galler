@@ -141,7 +141,8 @@
           "year": "2012-13",
           "description": "Electro Mechanical Solutions - Reliance Jio Infocomm Limited."
         }
-      ]
+      ],
+      "backgroundImage": "/uploads/image-1782358010166-199771819.jpg"
     },
     "introSection": {
       "title": "WE PUT OUR CLIENT'S REQUIREMENTS IN THE FOREFRONT.",
@@ -217,7 +218,7 @@
           "backgroundImage": "/uploads/image-1781845462642-468370417.jpg"
         },
         {
-          "value": "300K+",
+          "value": "100K",
           "label": "Devices Deployed",
           "tone": "devices",
           "backgroundImage": "/uploads/image-1781845493101-601943034.jpg"

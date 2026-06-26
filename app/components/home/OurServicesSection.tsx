@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import type { SiteContent } from "@/app/lib/getContent";
 
 type ServiceCategory = {
@@ -9,6 +12,11 @@ type ServiceCategory = {
 };
 
 type Props = { content?: SiteContent["homeServices"] };
+
+const SERVICES_BG = "linear-gradient(49deg, #051c2c 32%, #051c2c 32%, #0a3e65 64%)";
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 const DEFAULTS: NonNullable<SiteContent["homeServices"]> = {
   tagline: "WHAT WE DO",
@@ -60,8 +68,8 @@ const DEFAULTS: NonNullable<SiteContent["homeServices"]> = {
 
 function CategoryIcon({ icon }: { icon: ServiceCategory["icon"] }) {
   const props = {
-    width: 28,
-    height: 28,
+    width: 24,
+    height: 24,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
@@ -101,38 +109,60 @@ function ServiceItem({ index, label }: { index: number; label: string }) {
 
   return (
     <div className="flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="flex w-14 shrink-0 items-center justify-center border-r border-gray-200 bg-[#fafafa] text-sm font-bold text-primary sm:w-16">
+      <div className="flex w-14 shrink-0 items-center justify-center border-r border-[#0099E1]/20 bg-[#0099E1] text-sm font-bold text-white sm:w-16">
         {num}
       </div>
-      <p className="flex items-center px-4 py-3.5 font-century text-[18px] leading-snug text-[#1a1a1a] sm:px-5">
+      <p className="flex items-center px-4 py-2.5 font-century text-[15px] leading-relaxed text-[#000] sm:px-5">
         {label}
       </p>
     </div>
   );
 }
 
-function CategoryColumn({ category }: { category: ServiceCategory }) {
+function CategoryColumn({ category, index }: { category: ServiceCategory; index: number }) {
   return (
-    <div className="flex flex-col items-center">
-      <div className="relative mb-6">
-        <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-gray-200 bg-white text-navy shadow-sm">
+    <motion.div
+      className="flex flex-col items-center"
+      initial={{ opacity: 0, y: -40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={viewport}
+      transition={{
+        duration: 0.55,
+        ease: entryEase,
+        delay: index * 0.1,
+      }}
+    >
+      <div className="relative mb-4">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-[#0099E1] bg-white text-[#0099E1] shadow-sm">
           <CategoryIcon icon={category.icon} />
         </div>
-        <span className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+        <span className="absolute -right-0.5 -bottom-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-[#0099E1] text-xs font-bold text-white">
           {category.number}
         </span>
       </div>
 
-      <h3 className="mb-6 text-center font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#1a1a1a]">
+      <h3 className="mb-4 text-center font-cinzel text-[18px] font-normal leading-[1.08] tracking-tight text-white md:text-[22px]">
         {category.title}
       </h3>
 
-      <div className="flex w-full flex-col gap-3">
-        {category.items.map((item, index) => (
-          <ServiceItem key={`${category.id}-${index}`} index={index} label={item} />
+      <div className="flex w-full flex-col gap-2.5">
+        {category.items.map((item, itemIndex) => (
+          <motion.div
+            key={`${category.id}-${itemIndex}`}
+            initial={{ opacity: 0, x: -32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={viewport}
+            transition={{
+              duration: 0.5,
+              ease: entryEase,
+              delay: index * 0.1 + itemIndex * 0.06,
+            }}
+          >
+            <ServiceItem index={itemIndex} label={item} />
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -144,29 +174,38 @@ export default function OurServicesSection({ content }: Props) {
   };
 
   return (
-    <section id="services" className="bg-[#f6f6f6] py-16 sm:py-20 md:py-24 lg:py-28">
+    <section id="services" className="py-10 md:py-16" style={{ background: SERVICES_BG }}>
       <div className="mx-auto max-w-7xl px-6">
-        <header className="mx-auto mb-14 max-w-4xl text-center sm:mb-16 md:mb-20">
-          <p className="font-mono text-xs tracking-[0.25em] text-gray-500 uppercase sm:text-sm">
-            — {c.tagline} —
-          </p>
-          <h2 className="mt-4 font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
+        <header className="mx-auto mb-8 max-w-4xl text-center md:mb-10">
+          <motion.h2
+            className="text-center font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-white md:text-[40px]"
+            initial={{ opacity: 0, y: 48 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase }}
+          >
             {c.title}
-          </h2>
-          <p className="mt-5 font-century text-[18px] leading-relaxed text-gray-600">
+          </motion.h2>
+          <motion.p
+            className="mt-3 font-century text-[15px] leading-relaxed text-white/80"
+            initial={{ opacity: 0, x: -48 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase, delay: 0.12 }}
+          >
             {c.subtitle}
-          </p>
+          </motion.p>
         </header>
 
         <div className="relative">
           <div
-            className="pointer-events-none absolute top-12 right-[16.67%] left-[16.67%] hidden h-px bg-gray-200 lg:block"
+            className="pointer-events-none absolute top-10 right-[16.67%] left-[16.67%] hidden h-px bg-[#0099E1] lg:block"
             aria-hidden
           />
 
-          <div className="grid grid-cols-1 gap-14 lg:grid-cols-3 lg:gap-10 xl:gap-12">
-            {c.categories.map((category) => (
-              <CategoryColumn key={category.id} category={category as ServiceCategory} />
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3 lg:gap-8 xl:gap-10">
+            {c.categories.map((category, index) => (
+              <CategoryColumn key={category.id} category={category as ServiceCategory} index={index} />
             ))}
           </div>
         </div>

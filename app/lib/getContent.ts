@@ -67,6 +67,7 @@ export interface SiteContent {
     };
     journeyTimeline?: {
       heading: string;
+      backgroundImage?: string;
       milestones: { year: string; description: string }[];
     };
     introSection?: {

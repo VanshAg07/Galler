@@ -1,3 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { TextAnimate } from "@/registry/magicui/text-animate";
+
 interface DimensionCard {
   title: string;
   description: string;
@@ -9,6 +14,9 @@ interface AboutDimensionsProps {
   subtitle?: string;
   cards?: DimensionCard[];
 }
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 const DEFAULT_CARDS: DimensionCard[] = [
   {
@@ -84,17 +92,34 @@ export default function AboutDimensions({
       <div className="relative overflow-hidden bg-[#f4f6f8] py-14 sm:py-16">
         <BlueprintPattern />
         <div className="relative mx-auto max-w-4xl px-6 text-center sm:px-8">
-          <h2 className="font-serif text-3xl tracking-wide text-[#0b1f4a] sm:text-4xl md:text-[2.4rem]">
+          <TextAnimate
+            as="h2"
+            animation="slideRight"
+            by="character"
+            once
+            duration={1.1}
+            className="font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[40px]"
+          >
             {heading}
-          </h2>
-          <span className="mx-auto mt-4 block h-px w-16 bg-[#c9a227]" aria-hidden />
-          <p className="mt-5 text-base text-[#0b1f4a]/85 sm:text-lg">{subtitle}</p>
+          </TextAnimate>
+          {/* <span className="mx-auto mt-4 block h-px w-16 bg-[#c9a227]" aria-hidden /> */}
+          <TextAnimate
+            as="p"
+            animation="slideRight"
+            by="word"
+            once
+            delay={0.2}
+            duration={0.8}
+            className="mt-5 font-century text-[18px] font-normal normal-case leading-[1.08] text-[#0b1f4a]/85 md:text-[20px]"
+          >
+            {subtitle}
+          </TextAnimate>
         </div>
       </div>
 
       <div className="bg-[#0b1f4a] px-6 py-12 sm:px-8 sm:py-14">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-3 md:gap-6 lg:gap-8">
-          {cards.map((card) => (
+          {cards.map((card, index) => (
             <article
               key={card.title}
               className="relative rounded-t-[2rem] bg-white px-6 pb-8 pt-14 text-center shadow-lg sm:px-7 sm:pb-10"
@@ -102,13 +127,33 @@ export default function AboutDimensions({
               <div className="absolute -top-7 left-1/2 flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-[#0b1f4a] shadow-md">
                 <CardIcon type={card.icon} />
               </div>
-              <h3 className="font-serif text-lg tracking-wide text-[#0b1f4a] sm:text-xl">
+              <motion.h3
+                className="font-serif text-lg tracking-wide text-[#0b1f4a] sm:text-xl"
+                initial={{ opacity: 0, x: -40 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={viewport}
+                transition={{
+                  duration: 0.55,
+                  ease: entryEase,
+                  delay: index * 0.1,
+                }}
+              >
                 {card.title}
-              </h3>
+              </motion.h3>
               <span className="mx-auto mt-2 block h-1.5 w-1.5 rounded-full bg-[#c9a227]" aria-hidden />
-              <p className="mt-5 text-sm leading-relaxed text-[#333] sm:text-[0.95rem]">
+              <motion.p
+                className="mt-5 font-century text-[15px] leading-relaxed text-[#333]"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewport}
+                transition={{
+                  duration: 0.55,
+                  ease: entryEase,
+                  delay: index * 0.1,
+                }}
+              >
                 {card.description}
-              </p>
+              </motion.p>
             </article>
           ))}
         </div>

@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import type { SiteContent } from "@/app/lib/getContent";
+import { TextAnimate } from "@/registry/magicui/text-animate";
 import SubmitResumeModal from "./SubmitResumeModal";
 
 type CareersHeroContent = NonNullable<SiteContent["careersPage"]>["hero"];
@@ -23,16 +25,27 @@ const DEFAULT_CONTENT: CareersHeroContent = {
   image: "",
 };
 
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const headingClassName =
+  "font-cinzel text-[27px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[40px]";
+
 export default function CareersHero({ content }: CareersHeroProps) {
   const [resumeModalOpen, setResumeModalOpen] = useState(false);
   const hero = { ...DEFAULT_CONTENT, ...content };
   const imageSrc = hero.image ? resolveUploadSrc(hero.image) : undefined;
+  const headingLines = [hero.headingLine1, hero.headingLine2, hero.headingLine3].filter(Boolean);
+
+  let charOffset = 0;
 
   return (
     <>
       <section className="relative mt-20 min-h-[480px] overflow-hidden bg-[#f8f9fa] lg:min-h-[520px]">
-        {/* Image — flush to right viewport edge on desktop */}
-        <div className="absolute inset-y-0 right-0 hidden w-[54%] lg:block">
+        <motion.div
+          className="absolute inset-y-0 right-0 hidden w-[54%] lg:block"
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, ease: entryEase, delay: 0.15 }}
+        >
           {imageSrc ? (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -57,24 +70,49 @@ export default function CareersHero({ content }: CareersHeroProps) {
               </svg>
             </div>
           )}
-        </div>
+        </motion.div>
 
         <div className="relative z-10 mx-auto flex max-w-7xl items-center px-6 py-12 lg:min-h-[520px] lg:px-5 lg:py-16">
           <div className="max-w-xl lg:w-[46%] lg:max-w-none lg:pr-8">
-            <h1 className="font-serif text-3xl tracking-[0.12em] text-[#0b1f4a] sm:text-4xl">
-              {hero.headingLine1}
-              <br />
-              {hero.headingLine2}
-              <br />
-              {hero.headingLine3}
+            <h1 className={`${headingClassName} flex flex-col gap-3 md:gap-4`}>
+              {headingLines.map((line, index) => {
+                const delay = 0.15 + charOffset * 0.03;
+                charOffset += line.length;
+                return (
+                  <TextAnimate
+                    key={`${line}-${index}`}
+                    as="span"
+                    animation="slideRight"
+                    by="character"
+                    startOnView={false}
+                    once
+                    delay={delay}
+                    duration={0.03 * line.length + 0.3}
+                    className="block"
+                    accessible={index === 0}
+                  >
+                    {line}
+                  </TextAnimate>
+                );
+              })}
             </h1>
-            <p className="mt-6 text-sm leading-relaxed text-[#4a4a4a] sm:text-[0.95rem]">
+            <motion.p
+              className="mt-6 font-century text-[15px] leading-relaxed text-[#4a4a4a]"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.35 }}
+            >
               {hero.description}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            </motion.p>
+            <motion.div
+              className="mt-8 flex flex-wrap gap-4"
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.45 }}
+            >
               <Link
                 href="#openings"
-                className="inline-flex items-center gap-2 rounded-md bg-[#0b1f4a] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a1840]"
+                className="inline-flex items-center gap-2 rounded-md bg-[#0b1f4a] px-6 py-3 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#0a1840]"
               >
                 {hero.viewPositionsText}
                 <svg
@@ -93,7 +131,7 @@ export default function CareersHero({ content }: CareersHeroProps) {
               <button
                 type="button"
                 onClick={() => setResumeModalOpen(true)}
-                className="inline-flex items-center gap-2 rounded-md border-2 border-[#0b1f4a] bg-white px-6 py-3 text-sm font-semibold text-[#0b1f4a] transition-colors hover:bg-[#0b1f4a] hover:text-white"
+                className="inline-flex items-center gap-2 rounded-md border-2 border-[#0b1f4a] bg-white px-6 py-3 font-century text-[15px] font-semibold text-[#0b1f4a] transition-colors hover:bg-[#0b1f4a] hover:text-white"
               >
                 {hero.submitResumeText}
                 <svg
@@ -109,7 +147,7 @@ export default function CareersHero({ content }: CareersHeroProps) {
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </button>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>

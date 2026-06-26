@@ -1,4 +1,9 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
+import { TextAnimate } from "@/registry/magicui/text-animate";
 
 export interface TeamMember {
   id: string;
@@ -14,6 +19,9 @@ interface AboutTeamSectionProps {
   subtitle?: string;
   members?: TeamMember[];
 }
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 function LinkedInIcon() {
   return (
@@ -52,19 +60,57 @@ export default function AboutTeamSection({
     <section className="bg-white py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
         <div className="text-center">
-          <h2 className="font-serif text-3xl tracking-[0.15em] text-[#1a1a1a] sm:text-4xl">
+          <TextAnimate
+            as="h2"
+            animation="slideRight"
+            by="character"
+            once
+            duration={0.9}
+            className="font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#1a1a1a] md:text-[40px]"
+          >
             {heading}
-          </h2>
+          </TextAnimate>
           {subtitle ? (
-            <p className="mx-auto mt-4 max-w-2xl text-base text-[#555] sm:text-lg">{subtitle}</p>
+            <motion.p
+              className="mx-auto mt-4 max-w-2xl font-century text-[20px] leading-relaxed text-[#555]"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.15 }}
+            >
+              {subtitle}
+            </motion.p>
           ) : null}
         </div>
 
         <ul className="mt-12 grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-10">
-          {visibleMembers.map((member) => {
+          {visibleMembers.map((member, memberIndex) => {
             const linkedinUrl = normalizeUrl(member.linkedin);
             const instagramUrl = normalizeUrl(member.instagram);
             const photoSrc = member.photo ? resolveUploadSrc(member.photo) : null;
+            const socialLinks = [
+              linkedinUrl
+                ? {
+                    key: "linkedin",
+                    href: linkedinUrl,
+                    label: `${member.name} on LinkedIn`,
+                    icon: <LinkedInIcon />,
+                  }
+                : null,
+              instagramUrl
+                ? {
+                    key: "instagram",
+                    href: instagramUrl,
+                    label: `${member.name} on Instagram`,
+                    icon: <InstagramIcon />,
+                  }
+                : null,
+            ].filter(Boolean) as Array<{
+              key: string;
+              href: string;
+              label: string;
+              icon: ReactNode;
+            }>;
 
             return (
               <li key={member.id} className="flex flex-col items-center text-center">
@@ -83,41 +129,62 @@ export default function AboutTeamSection({
                   )}
                 </div>
 
-                <h3 className="mt-5 text-xl font-medium tracking-wide text-[#1a1a1a] sm:text-2xl">
-                  {member.name}
-                </h3>
+                {member.name ? (
+                  <TextAnimate
+                    as="h3"
+                    animation="slideRight"
+                    by="character"
+                    once
+                    duration={0.7}
+                    delay={memberIndex * 0.05}
+                    className="mt-5 font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#1a1a1a]"
+                  >
+                    {member.name}
+                  </TextAnimate>
+                ) : null}
 
-                {(linkedinUrl || instagramUrl) && (
+                {socialLinks.length > 0 ? (
                   <div className="mt-3 flex items-center justify-center gap-3">
-                    {linkedinUrl ? (
-                      <a
-                        href={linkedinUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${member.name} on LinkedIn`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#0b1f4a]/15 text-[#0b1f4a] transition-colors hover:border-[#0b1f4a] hover:bg-[#0b1f4a] hover:text-white"
+                    {socialLinks.map((social, index) => (
+                      <motion.div
+                        key={social.key}
+                        initial={{ opacity: 0, x: 40 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={viewport}
+                        transition={{
+                          duration: 0.55,
+                          ease: entryEase,
+                          delay: memberIndex * 0.05 + index * 0.08,
+                        }}
                       >
-                        <LinkedInIcon />
-                      </a>
-                    ) : null}
-                    {instagramUrl ? (
-                      <a
-                        href={instagramUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${member.name} on Instagram`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#0b1f4a]/15 text-[#0b1f4a] transition-colors hover:border-[#0b1f4a] hover:bg-[#0b1f4a] hover:text-white"
-                      >
-                        <InstagramIcon />
-                      </a>
-                    ) : null}
+                        <a
+                          href={social.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={social.label}
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#0b1f4a]/15 text-[#0b1f4a] transition-colors hover:border-[#0b1f4a] hover:bg-[#0b1f4a] hover:text-white"
+                        >
+                          {social.icon}
+                        </a>
+                      </motion.div>
+                    ))}
                   </div>
-                )}
+                ) : null}
 
                 {member.description ? (
-                  <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#555] sm:text-[0.95rem]">
+                  <motion.p
+                    className="mt-4 max-w-sm font-century text-[15px] leading-relaxed text-[#555]"
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={viewport}
+                    transition={{
+                      duration: 0.55,
+                      ease: entryEase,
+                      delay: memberIndex * 0.05 + 0.1,
+                    }}
+                  >
                     {member.description}
-                  </p>
+                  </motion.p>
                 ) : null}
               </li>
             );

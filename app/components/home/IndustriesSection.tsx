@@ -3,6 +3,7 @@ import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import { getIndustrySlug } from "@/app/lib/industries-types";
 import type { SiteContent } from "@/app/lib/getContent";
 import industriesBg from "@/Assets/industries.png";
+import CharacterSlideHeading from "./CharacterSlideHeading";
 
 type IndustryItem = {
   id: string;
@@ -61,7 +62,7 @@ export default function IndustriesSection({ content }: Props) {
   return (
     <section id="industries" className="relative bg-white py-8 sm:py-10 md:py-12">
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 opacity-80"
         style={{
           backgroundImage: `url(${industriesBg.src})`,
           backgroundAttachment: "fixed",
@@ -72,9 +73,7 @@ export default function IndustriesSection({ content }: Props) {
       />
 
       <div className="relative mx-auto max-w-7xl px-6">
-        <h2 className="text-center font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-[#000000] md:text-[40px]">
-          {c.title}
-        </h2>
+        <CharacterSlideHeading title={c.title} />
 
         <div className="mt-5 grid grid-cols-1 gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:mt-7 lg:grid-cols-3 lg:gap-5">
           {c.items.map((item) => (

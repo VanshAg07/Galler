@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import logo from "@/Assets/logo.png";
 
@@ -15,7 +16,13 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function Navbar({ activePage = "home" }: { activePage?: string }) {
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+
+export default function Navbar({
+  activePage = "home",
+}: {
+  activePage?: string;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
@@ -33,56 +40,89 @@ export default function Navbar({ activePage = "home" }: { activePage?: string })
     >
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center">
-          <Image src={logo} alt="Galler" className="h-20 w-auto" priority />
-        </Link>
+        <motion.div
+          initial={{ opacity: 0, x: -28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.55, ease: entryEase }}
+        >
+          <Link href="/" className="flex items-center">
+            <Image src={logo} alt="Galler" className="h-20 w-auto" priority />
+          </Link>
+        </motion.div>
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => {
+          {navLinks.map((link, index) => {
             const isActive = activePage === link.label.toLowerCase();
             return (
-              <Link
+              <motion.div
                 key={link.label}
-                href={link.href}
-                className={`font-century relative text-[15px] font-medium transition-colors hover:text-white ${
-                  isActive ? "text-white" : "text-white/70"
-                }`}
+                initial={{ opacity: 0, x: 28 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  duration: 0.55,
+                  ease: entryEase,
+                  delay: 0.08 + index * 0.05,
+                }}
               >
-                {isActive && (
-                  <span className="absolute -left-3 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--primary-orange)]" />
-                )}
-                {link.label}
-              </Link>
+                <Link
+                  href={link.href}
+                  className={`font-century relative text-[15px] font-medium transition-colors hover:text-white ${
+                    isActive ? "text-white" : "text-white/70"
+                  }`}
+                >
+                  {isActive && (
+                    <span className="absolute -left-3 top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-[var(--primary-orange)]" />
+                  )}
+                  {link.label}
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
 
         {/* Right Actions */}
-        <div className="hidden items-center gap-3 md:flex">
+        <motion.div
+          className="hidden items-center gap-3 md:flex"
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{
+            duration: 0.55,
+            ease: entryEase,
+            delay: 0.08 + navLinks.length * 0.05,
+          }}
+        >
           <Link
             href="/admin/login"
             className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
           >
             Admin Portal
           </Link>
-        </div>
+        </motion.div>
 
         {/* Mobile Menu Toggle */}
-        <button
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-white md:hidden"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-          aria-expanded={mobileOpen}
+        <motion.div
+          className="md:hidden"
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.55, ease: entryEase, delay: 0.08 }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {mobileOpen ? (
-              <path d="M6 6l12 12M6 18L18 6" />
-            ) : (
-              <path d="M3 6h18M3 12h18M3 18h18" />
-            )}
-          </svg>
-        </button>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-white"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {mobileOpen ? (
+                <path d="M6 6l12 12M6 18L18 6" />
+              ) : (
+                <path d="M3 6h18M3 12h18M3 18h18" />
+              )}
+            </svg>
+          </button>
+        </motion.div>
       </div>
     </header>
 

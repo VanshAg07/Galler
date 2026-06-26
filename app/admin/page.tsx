@@ -140,6 +140,7 @@ export default function AdminDashboard() {
   const [uploadingProductImageKey, setUploadingProductImageKey] = useState<string | null>(null);
   const [uploadingProductGalleryKey, setUploadingProductGalleryKey] = useState<string | null>(null);
   const [uploadingRequirementBg, setUploadingRequirementBg] = useState(false);
+  const [uploadingJourneyBg, setUploadingJourneyBg] = useState(false);
   const [uploadingTeamMemberIndex, setUploadingTeamMemberIndex] = useState<number | null>(null);
   const [uploadingProjectsHeroImage, setUploadingProjectsHeroImage] = useState(false);
   const [uploadingProjectIndustryIndex, setUploadingProjectIndustryIndex] = useState<number | null>(null);
@@ -1507,7 +1508,7 @@ export default function AdminDashboard() {
                 No background image uploaded
               </div>
             )}
-            <p className="truncate text-xs text-gray-400">{backgroundImage || "No image set — homepage video will show as fallback"}</p>
+            <p className="truncate text-xs text-gray-400">{backgroundImage || "No image set — upload a hero background image"}</p>
             <div className="flex flex-wrap items-center gap-2">
               <label
                 className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingAboutHeroImage ? "pointer-events-none opacity-50" : ""}`}
@@ -1582,7 +1583,27 @@ export default function AdminDashboard() {
 
   const renderAboutJourneyTimeline = () => {
     type Milestone = { year: string; description: string };
-    const milestones = ((content.aboutPage as Record<string, unknown>)?.journeyTimeline as Record<string, unknown>)?.milestones as Milestone[] ?? [];
+    const journeyTimeline = ((content.aboutPage as Record<string, unknown>)?.journeyTimeline as Record<string, unknown>) ?? {};
+    const milestones = (journeyTimeline.milestones as Milestone[]) ?? [];
+    const backgroundImage = String(journeyTimeline.backgroundImage ?? "");
+
+    const resolvePreviewSrc = (src: string) => {
+      if (src.startsWith("/uploads/")) return `${API_URL}${src}`;
+      return src;
+    };
+
+    const updateJourneyTimeline = (field: string, value: string) => {
+      setContent((p) => ({
+        ...p,
+        aboutPage: {
+          ...(p.aboutPage as Record<string, unknown>),
+          journeyTimeline: {
+            ...((p.aboutPage as Record<string, unknown>)?.journeyTimeline as Record<string, unknown>),
+            [field]: value,
+          },
+        },
+      }));
+    };
     
     const updateMilestones = (next: Milestone[]) => {
       setContent((p) => ({ 
@@ -1602,6 +1623,76 @@ export default function AdminDashboard() {
         <h2 className="text-2xl font-bold text-[#1a1a1a]">About Page — Journey Timeline</h2>
         <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
           {renderField("aboutPage", "journeyTimeline.heading", "Section Heading", false, ["journeyTimeline", "heading"])}
+          <div className="flex flex-col gap-3 rounded-xl border-2 border-dashed border-gray-200 p-6">
+            <p className="text-sm font-semibold text-gray-700">Section Background Image</p>
+            <p className="text-xs text-gray-500">
+              PNG, JPG, or WebP. Recommended wide landscape image with parallax scroll effect. Uploads save automatically.
+            </p>
+            {backgroundImage ? (
+              <div className="overflow-hidden rounded-lg bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={resolvePreviewSrc(backgroundImage)}
+                  alt="Journey section preview"
+                  className="aspect-[21/9] w-full object-cover"
+                />
+              </div>
+            ) : (
+              <div className="flex aspect-[21/9] items-center justify-center rounded-lg bg-gray-100 text-sm text-gray-400">
+                No background image uploaded
+              </div>
+            )}
+            <p className="truncate text-xs text-gray-400">{backgroundImage || "No image set — navy fallback will show"}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <label
+                className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingJourneyBg ? "pointer-events-none opacity-50" : ""}`}
+              >
+                {uploadingJourneyBg ? "Uploading…" : backgroundImage ? "Replace image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/jpg"
+                  className="hidden"
+                  disabled={uploadingJourneyBg}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setUploadingJourneyBg(true);
+                    try {
+                      const url = await uploadImage(file);
+                      updateJourneyTimeline("backgroundImage", url);
+                      await saveContentSection("aboutPage");
+                      setSaved(true);
+                      setTimeout(() => setSaved(false), 2000);
+                    } catch (err) {
+                      alert(err instanceof Error ? err.message : "Upload failed");
+                    } finally {
+                      setUploadingJourneyBg(false);
+                      e.target.value = "";
+                    }
+                  }}
+                />
+              </label>
+              {backgroundImage && (
+                <button
+                  type="button"
+                  disabled={uploadingJourneyBg}
+                  onClick={async () => {
+                    updateJourneyTimeline("backgroundImage", "");
+                    try {
+                      await saveContentSection("aboutPage");
+                      setSaved(true);
+                      setTimeout(() => setSaved(false), 2000);
+                    } catch (err) {
+                      alert(err instanceof Error ? err.message : "Failed to remove image");
+                    }
+                  }}
+                  className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                >
+                  Remove image
+                </button>
+              )}
+            </div>
+          </div>
           <hr className="border-gray-100" />
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-gray-700">Timeline Milestones</h3>

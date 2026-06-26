@@ -1,6 +1,8 @@
+"use client";
+
+import { motion } from "framer-motion";
 import aboutBanner from "@/Assets/aboutbanner.jpg";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
-import GoldAccentLine from "./GoldAccentLine";
 
 interface Plant {
   name: string;
@@ -35,17 +37,30 @@ const DEFAULT_PLANTS: Plant[] = [
 const MAP_EMBED_URL =
   "https://maps.google.com/maps?q=Plot+No.+620,+Sector+8+Rd,+Sector+8,+Imt+Manesar,+Gurugram,+Haryana+122050,+India&hl=en&z=16&output=embed";
 
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
+
 export default function ContactLocations({ plants = DEFAULT_PLANTS }: ContactLocationsProps) {
   return (
     <section className="bg-white py-14 sm:py-16">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2 lg:gap-14 lg:px-10">
-        {/* Our Location */}
         <div>
-          <h2 className="font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+          <motion.h2
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            initial={{ opacity: 0, y: -40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase }}
+          >
             OUR LOCATION
-          </h2>
-          <GoldAccentLine className="mt-4" />
-          <div className="mt-8 overflow-hidden rounded-sm border border-[#e5e5e5] shadow-sm">
+          </motion.h2>
+          <motion.div
+            className="mt-8 overflow-hidden rounded-sm border border-[#e5e5e5] shadow-sm"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase, delay: 0.1 }}
+          >
             <iframe
               title="Galler India Pvt. Ltd. location"
               src={MAP_EMBED_URL}
@@ -54,34 +69,51 @@ export default function ContactLocations({ plants = DEFAULT_PLANTS }: ContactLoc
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
-          </div>
+          </motion.div>
         </div>
 
-        {/* Our Plants */}
         <div>
-          <h2 className="font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+          <motion.h2
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            initial={{ opacity: 0, y: -40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase, delay: 0.05 }}
+          >
             OUR PLANTS
-          </h2>
-          <GoldAccentLine className="mt-4" />
+          </motion.h2>
           <ul className="mt-8 space-y-6">
-            {plants.map((plant) => {
+            {plants.map((plant, index) => {
               const imageSrc = plant.image ? resolveUploadSrc(plant.image) : aboutBanner.src;
 
               return (
-              <li key={plant.name} className="flex gap-4">
-                <div className="h-20 w-28 shrink-0 overflow-hidden rounded-sm border border-[#e5e5e5]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={imageSrc}
-                    alt=""
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-                <div className="min-w-0 pt-1">
-                  <p className="text-xs font-bold tracking-wider text-[#0b1f4a]">{plant.name}</p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-[#4a4a4a]">{plant.address}</p>
-                </div>
-              </li>
+                <motion.li
+                  key={plant.name}
+                  className="flex gap-4"
+                  initial={{ opacity: 0, x: -40 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={viewport}
+                  transition={{
+                    duration: 0.55,
+                    ease: entryEase,
+                    delay: 0.08 + index * 0.1,
+                  }}
+                >
+                  <div className="h-20 w-28 shrink-0 overflow-hidden rounded-sm border border-[#e5e5e5]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imageSrc}
+                      alt=""
+                      className="h-full w-full object-cover object-center"
+                    />
+                  </div>
+                  <div className="min-w-0 pt-1">
+                    <p className="font-century text-[15px] font-bold text-[#0b1f4a]">{plant.name}</p>
+                    <p className="mt-1.5 font-century text-[15px] leading-relaxed text-[#4a4a4a]">
+                      {plant.address}
+                    </p>
+                  </div>
+                </motion.li>
               );
             })}
           </ul>

@@ -41,6 +41,7 @@ export default function AboutPage() {
         <AboutJourney
           heading={aboutPage?.journeyTimeline?.heading}
           milestones={aboutPage?.journeyTimeline?.milestones}
+          backgroundImage={aboutPage?.journeyTimeline?.backgroundImage}
         />
         <AboutDimensions
           heading={aboutPage?.dimensions?.heading}

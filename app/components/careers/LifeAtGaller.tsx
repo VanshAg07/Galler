@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import type { SiteContent } from "@/app/lib/getContent";
+import { TextAnimate } from "@/registry/magicui/text-animate";
 
 type LifeAtGallerContent = NonNullable<SiteContent["careersPage"]>["lifeAtGaller"];
 
@@ -71,6 +73,9 @@ function useGalleryLayout(viewportRef: React.RefObject<HTMLDivElement | null>) {
 const arrowClass =
   "absolute z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#ddd] bg-white text-[#4a4a4a] shadow-md transition-colors hover:bg-[#0b1f4a] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white disabled:hover:text-[#4a4a4a]";
 
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
+
 export default function LifeAtGaller({ content }: LifeAtGallerProps) {
   const section = { ...DEFAULT_CONTENT, ...content };
   const images = section.images?.length ? section.images : DEFAULT_CONTENT.images;
@@ -94,14 +99,33 @@ export default function LifeAtGaller({ content }: LifeAtGallerProps) {
   return (
     <section className="bg-[#f8f9fa] py-14 sm:py-16">
       <div className="mx-auto max-w-[1720px] px-6 lg:px-10">
-        <h2 className="text-center font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+        <TextAnimate
+          as="h2"
+          animation="slideRight"
+          by="character"
+          once
+          duration={0.9}
+          className="text-center font-cinzel text-[27px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[40px]"
+        >
           {section.heading}
-        </h2>
-        <p className="mt-3 text-center text-sm text-[#4a4a4a] sm:text-[0.95rem]">
+        </TextAnimate>
+        <motion.p
+          className="mt-3 text-center font-century text-[15px] text-[#4a4a4a]"
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={viewport}
+          transition={{ duration: 0.6, ease: entryEase, delay: 0.12 }}
+        >
           {section.subtitle}
-        </p>
+        </motion.p>
 
-        <div className="relative mt-10">
+        <motion.div
+          className="relative mt-10"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewport}
+          transition={{ duration: 0.6, ease: entryEase, delay: 0.2 }}
+        >
           <div ref={viewportRef} className="overflow-hidden">
             <div
               className="flex transition-transform duration-300 ease-in-out"
@@ -143,7 +167,7 @@ export default function LifeAtGaller({ content }: LifeAtGallerProps) {
                       )}
                     </div>
                     <div className="bg-[#0b1f4a] px-3 py-3 text-center">
-                      <p className="text-xs font-medium text-white sm:text-sm">{image.label}</p>
+                      <p className="font-century text-[15px] font-medium text-white">{image.label}</p>
                     </div>
                   </div>
                 );
@@ -176,7 +200,7 @@ export default function LifeAtGaller({ content }: LifeAtGallerProps) {
               <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

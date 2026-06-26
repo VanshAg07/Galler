@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { MdPhone } from "react-icons/md";
 import { GoClock } from "react-icons/go";
 import { IoLocationOutline, IoMailOutline } from "react-icons/io5";
-import GoldAccentLine from "./GoldAccentLine";
-
 import { API_URL } from "@/app/lib/apiUrl";
 
 interface ContactInfoItem {
@@ -33,6 +32,9 @@ const SUBJECT_OPTIONS = [
   "Other",
 ];
 
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
+
 function ContactIcon({ type }: { type: "phone" | "email" | "location" | "clock" }) {
   const icons = {
     phone: MdPhone,
@@ -49,9 +51,15 @@ function ContactIcon({ type }: { type: "phone" | "email" | "location" | "clock" 
   );
 }
 
-function InfoRow({ label, lines, hrefs }: ContactInfoItem) {
+function InfoRow({ label, lines, hrefs, index }: ContactInfoItem & { index: number }) {
   return (
-    <div className="flex gap-4 border-b border-[#e5e5e5] py-6 first:pt-0 last:border-b-0">
+    <motion.div
+      className="flex gap-4 border-b border-[#e5e5e5] py-6 first:pt-0 last:border-b-0"
+      initial={{ opacity: 0, x: -40 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={viewport}
+      transition={{ duration: 0.55, ease: entryEase, delay: index * 0.08 }}
+    >
       <ContactIcon
         type={
           label === "PHONE"
@@ -64,7 +72,7 @@ function InfoRow({ label, lines, hrefs }: ContactInfoItem) {
         }
       />
       <div>
-        <p className="text-xs font-bold tracking-wider text-[#0b1f4a]">{label}</p>
+        <p className="font-century text-[15px] font-bold tracking-wide text-[#0b1f4a]">{label}</p>
         <div className="mt-2 space-y-1">
           {lines.map((line, i) => {
             const href = hrefs?.[i];
@@ -73,21 +81,21 @@ function InfoRow({ label, lines, hrefs }: ContactInfoItem) {
                 <a
                   key={line}
                   href={href}
-                  className="block text-sm text-[#4a4a4a] transition-colors hover:text-[#0b1f4a]"
+                  className="block font-century text-[15px] text-[#4a4a4a] transition-colors hover:text-[#0b1f4a]"
                 >
                   {line}
                 </a>
               );
             }
             return (
-              <p key={line} className="text-sm text-[#4a4a4a]">
+              <p key={line} className="font-century text-[15px] text-[#4a4a4a]">
                 {line}
               </p>
             );
           })}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -154,7 +162,7 @@ export default function ContactMain({
   };
 
   const inputClass =
-    "w-full rounded-md border border-[#ddd] bg-white px-4 py-3 text-sm text-[#333] outline-none transition-colors placeholder:text-[#aaa] focus:border-[#0b1f4a]";
+    "w-full rounded-md border border-[#ddd] bg-white px-4 py-3 font-century text-[15px] text-[#333] outline-none transition-colors placeholder:text-[#aaa] focus:border-[#0b1f4a]";
 
   const contactItems: ContactInfoItem[] = [
     {
@@ -182,28 +190,44 @@ export default function ContactMain({
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2 lg:gap-0 lg:px-10">
         {/* Get In Touch */}
         <div className="lg:border-r lg:border-[#e0e0e0] lg:pr-14">
-          <h2 className="font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+          <motion.h2
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase }}
+          >
             GET IN TOUCH
-          </h2>
-          <GoldAccentLine className="mt-4" />
+          </motion.h2>
           <div className="mt-8">
-            {contactItems.map((item) => (
-              <InfoRow key={item.label} {...item} />
+            {contactItems.map((item, index) => (
+              <InfoRow key={item.label} {...item} index={index} />
             ))}
           </div>
         </div>
 
         {/* Send Us A Message */}
         <div className="lg:pl-14">
-          <h2 className="font-serif text-2xl tracking-[0.1em] text-[#0b1f4a] sm:text-3xl">
+          <motion.h2
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            initial={{ opacity: 0, x: 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase }}
+          >
             SEND US A MESSAGE
-          </h2>
-          <GoldAccentLine className="mt-4" />
+          </motion.h2>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <motion.div
+              className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.08 }}
+            >
               <div>
-                <label className="mb-1.5 block text-sm text-[#555]">
+                <label className="mb-1.5 block font-century text-[15px] text-[#555]">
                   Full Name <span className="text-[#c9a227]">*</span>
                 </label>
                 <input
@@ -216,7 +240,7 @@ export default function ContactMain({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm text-[#555]">Company Name</label>
+                <label className="mb-1.5 block font-century text-[15px] text-[#555]">Company Name</label>
                 <input
                   type="text"
                   name="companyName"
@@ -225,11 +249,17 @@ export default function ContactMain({
                   className={inputClass}
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <motion.div
+              className="grid grid-cols-1 gap-5 sm:grid-cols-2"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.16 }}
+            >
               <div>
-                <label className="mb-1.5 block text-sm text-[#555]">
+                <label className="mb-1.5 block font-century text-[15px] text-[#555]">
                   Email Address <span className="text-[#c9a227]">*</span>
                 </label>
                 <input
@@ -242,7 +272,7 @@ export default function ContactMain({
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-sm text-[#555]">Phone Number</label>
+                <label className="mb-1.5 block font-century text-[15px] text-[#555]">Phone Number</label>
                 <input
                   type="tel"
                   name="phone"
@@ -251,10 +281,15 @@ export default function ContactMain({
                   className={inputClass}
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="mb-1.5 block text-sm text-[#555]">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.24 }}
+            >
+              <label className="mb-1.5 block font-century text-[15px] text-[#555]">
                 Subject <span className="text-[#c9a227]">*</span>
               </label>
               <select
@@ -273,10 +308,15 @@ export default function ContactMain({
                   </option>
                 ))}
               </select>
-            </div>
+            </motion.div>
 
-            <div>
-              <label className="mb-1.5 block text-sm text-[#555]">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.32 }}
+            >
+              <label className="mb-1.5 block font-century text-[15px] text-[#555]">
                 Your Message <span className="text-[#c9a227]">*</span>
               </label>
               <textarea
@@ -287,28 +327,42 @@ export default function ContactMain({
                 rows={5}
                 className={`${inputClass} resize-none`}
               />
-            </div>
+            </motion.div>
 
             {error ? (
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="font-century text-[15px] text-red-600">{error}</p>
             ) : null}
 
-            <button
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.55, ease: entryEase, delay: 0.4 }}
+            >
+              <button
               type="submit"
               disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-md bg-[#0b1f4a] px-8 py-3 text-sm font-semibold tracking-wider text-white transition-colors hover:bg-[#0a1840] disabled:cursor-not-allowed disabled:opacity-60"
+              className="group inline-flex items-center rounded-md bg-[#0b1f4a] px-8 py-3 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#0a1840] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitted ? "MESSAGE SENT!" : submitting ? "SENDING..." : "SEND MESSAGE"}
-              <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-[#c9a227]" aria-hidden>
-                <path
-                  d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+              {!submitted && !submitting ? (
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="h-4 w-4 shrink-0 origin-center translate-x-2 rotate-0 text-[#c9a227] transition-transform duration-300 ease-out group-hover:translate-x-3 group-hover:rotate-[45deg]"
+                  aria-hidden
+                >
+                  <path
+                    d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : null}
+              </button>
+            </motion.div>
           </form>
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 
 export interface JourneyMilestone {
   year: string;
@@ -17,6 +18,7 @@ export interface JourneyMilestone {
 interface AboutJourneyProps {
   heading?: string;
   milestones?: JourneyMilestone[];
+  backgroundImage?: string;
 }
 
 const DEFAULT_MILESTONES: JourneyMilestone[] = [
@@ -40,35 +42,8 @@ const DEFAULT_MILESTONES: JourneyMilestone[] = [
   },
 ];
 
-function AstronautGraphic() {
-  return (
-    <svg
-      viewBox="0 0 280 420"
-      fill="none"
-      className="h-full w-full opacity-90"
-      aria-hidden
-    >
-      <ellipse cx="140" cy="380" rx="70" ry="12" fill="white" opacity="0.15" />
-      <circle cx="140" cy="95" r="52" fill="#f4f4f4" />
-      <circle cx="140" cy="95" r="44" fill="#d8dce3" />
-      <ellipse cx="140" cy="95" rx="38" ry="34" fill="#b8c0cc" opacity="0.5" />
-      <rect x="88" y="145" width="104" height="130" rx="36" fill="#eceff3" />
-      <rect x="98" y="155" width="84" height="90" rx="20" fill="#d5dbe3" />
-      <rect x="52" y="168" width="36" height="88" rx="18" fill="#eceff3" />
-      <rect x="192" y="168" width="36" height="88" rx="18" fill="#eceff3" />
-      <rect x="108" y="268" width="28" height="72" rx="14" fill="#eceff3" />
-      <rect x="144" y="268" width="28" height="72" rx="14" fill="#eceff3" />
-      <circle cx="72" cy="252" r="14" fill="#d5dbe3" />
-      <circle cx="208" cy="252" r="14" fill="#d5dbe3" />
-      <path
-        d="M118 340 L108 390 M162 340 L172 390"
-        stroke="#d5dbe3"
-        strokeWidth="16"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
 
 function TimelineDot({
   index,
@@ -167,10 +142,24 @@ function TimelineItem({
       <div className="absolute top-1 left-0 -translate-x-1/2">
         <TimelineDot index={index} total={total} scrollYProgress={scrollYProgress} />
       </div>
-      <p className="text-sm font-medium text-white sm:text-base lg:text-lg">{item.year}</p>
-      <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/85 sm:text-base lg:max-w-2xl">
+      <motion.p
+        className="font-century text-[16px] text-white"
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={viewport}
+        transition={{ duration: 0.55, ease: entryEase, delay: index * 0.1 }}
+      >
+        {item.year}
+      </motion.p>
+      <motion.p
+        className="mt-2 max-w-xl font-century text-[14px] leading-relaxed text-white/85 lg:max-w-2xl"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={viewport}
+        transition={{ duration: 0.55, ease: entryEase, delay: index * 0.1 + 0.08 }}
+      >
         {item.description}
-      </p>
+      </motion.p>
     </motion.li>
   );
 }
@@ -178,8 +167,10 @@ function TimelineItem({
 export default function AboutJourney({
   heading = "JOURNEY",
   milestones = DEFAULT_MILESTONES,
+  backgroundImage,
 }: AboutJourneyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const bgImageSrc = backgroundImage ? resolveUploadSrc(backgroundImage) : undefined;
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -197,17 +188,32 @@ export default function AboutJourney({
       ref={containerRef}
       className="relative overflow-hidden bg-[#0b1f4a] pb-16 pt-20 sm:pb-20 sm:pt-24"
     >
-      <div
-        className="pointer-events-none absolute -right-24 -top-1 h-40 w-[55%] rounded-bl-[100%] bg-white"
-        aria-hidden
-      />
+      {bgImageSrc ? (
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${bgImageSrc})`,
+            backgroundAttachment: "fixed",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
+          }}
+          aria-hidden
+        />
+      ) : null}
 
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(77,217,240,0.12),transparent_50%),radial-gradient(ellipse_at_80%_70%,rgba(255,255,255,0.06),transparent_45%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[#0b1f4a]/75" aria-hidden />
 
-      <div className="relative mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
-        <h2 className="font-serif text-4xl tracking-[0.2em] text-white sm:text-5xl md:text-6xl">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-8 lg:px-10">
+        <motion.h2
+          className="font-cinzel text-[24px] font-normal leading-[1.08] tracking-tight text-white md:text-[40px]"
+          initial={{ opacity: 0, y: -40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewport}
+          transition={{ duration: 0.6, ease: entryEase }}
+        >
           {heading}
-        </h2>
+        </motion.h2>
 
         <div className="relative mt-14 max-w-3xl sm:mt-16 lg:mt-20">
           <AnimatedLine progress={smoothProgress} />
@@ -223,10 +229,6 @@ export default function AboutJourney({
             ))}
           </ul>
         </div>
-      </div>
-
-      <div className="pointer-events-none absolute right-0 bottom-0 hidden h-[min(420px,55vh)] w-[min(280px,30vw)] lg:block">
-        <AstronautGraphic />
       </div>
     </section>
   );
