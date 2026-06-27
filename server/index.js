@@ -73,7 +73,13 @@ app.use('/api/contact', contactLimiter); // Contact form protection
 app.use('/api/careers/resume', uploadLimiter); // Resume upload protection
 app.use('/api/careers/apply', uploadLimiter); // Job application protection
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files with CORS headers for images
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
