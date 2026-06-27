@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import { enrichCareersJob, type CareersJob } from "./careers-data";
 
+export type { CareersJob } from "./careers-data";
+
 export interface SiteContent {
   hero: {
     title: string;
