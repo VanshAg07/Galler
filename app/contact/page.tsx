@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getContent } from "../lib/getContent";
+import { API_URL } from "../lib/apiUrl";
+import type { SiteContent } from "../lib/getContent";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import ContactHero from "../components/contact/ContactHero";
@@ -8,6 +9,7 @@ import ContactLocations from "../components/contact/ContactLocations";
 import ContactDepartments from "../components/contact/ContactDepartments";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Contact — Galler Engineering",
@@ -15,8 +17,21 @@ export const metadata: Metadata = {
     "Get in touch with Galler India for product inquiries, technical support, partnerships, and career opportunities.",
 };
 
-export default function ContactPage() {
-  const content = getContent();
+async function getContentFromAPI(): Promise<SiteContent | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/content`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function ContactPage() {
+  const content = await getContentFromAPI();
   const contactPage = content?.contactPage;
 
   return (

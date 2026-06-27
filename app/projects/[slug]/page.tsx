@@ -1,4 +1,5 @@
-import { getContent } from "@/app/lib/getContent";
+import { API_URL } from "@/app/lib/apiUrl";
+import type { SiteContent } from "@/app/lib/getContent";
 import Navbar from "@/app/components/common/Navbar";
 import Footer from "@/app/components/common/Footer";
 import ProjectsIndustryHero from "@/app/components/projects/ProjectsIndustryHero";
@@ -6,14 +7,28 @@ import ProjectCard from "./ProjectCard";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+async function getContentFromAPI(): Promise<SiteContent | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/content`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
 export default async function ProjectIndustryPage({ params }: PageProps) {
   const { slug } = await params;
-  const content = getContent();
+  const content = await getContentFromAPI();
   const projectsPage = content?.projectsPage;
 
   const industries = projectsPage?.industries ?? [];

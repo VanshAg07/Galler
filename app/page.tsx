@@ -1,4 +1,5 @@
-import { getContent } from "./lib/getContent";
+import { API_URL } from "./lib/apiUrl";
+import type { SiteContent } from "./lib/getContent";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import HeroSection from "./components/home/HeroSection";
@@ -7,11 +8,25 @@ import OurServicesSection from "./components/home/OurServicesSection";
 import IndustriesSection from "./components/home/IndustriesSection";
 import LogoMarquee from "./components/home/LogoMarquee";
 
-// Re-read content.json on every request so admin changes appear immediately
+// Re-fetch content from API on every request so admin changes appear immediately
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-export default function Home() {
-  const content = getContent();
+async function getContentFromAPI(): Promise<SiteContent | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/content`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const content = await getContentFromAPI();
 
   return (
     <>

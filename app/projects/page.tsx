@@ -1,18 +1,33 @@
-import { getContent } from "../lib/getContent";
+import { API_URL } from "../lib/apiUrl";
+import type { SiteContent } from "../lib/getContent";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import ProjectsHero from "../components/projects/ProjectsHero";
 import ProjectsIndustriesGrid from "../components/projects/ProjectsIndustriesGrid";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata = {
   title: "Our Projects — Galler Engineering",
   description: "Explore our successfully implemented projects across industries",
 };
 
-export default function ProjectsPage() {
-  const content = getContent();
+async function getContentFromAPI(): Promise<SiteContent | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/content`, {
+      cache: "no-store",
+      next: { revalidate: 0 },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export default async function ProjectsPage() {
+  const content = await getContentFromAPI();
   const projectsPage = content?.projectsPage;
 
   const industries = projectsPage?.industries ?? [];
