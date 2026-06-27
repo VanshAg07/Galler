@@ -1,3 +1,13 @@
+export type ProductDownloadButtons = {
+  enabled?: boolean;
+  showBrochure?: boolean;
+  showModel3d?: boolean;
+  brochureUrl?: string;
+  brochureFileName?: string;
+  model3dUrl?: string;
+  model3dFileName?: string;
+};
+
 export type IndustryGalleryItem = {
   id: string;
   src: string;
@@ -14,6 +24,7 @@ export type IndustryProduct = {
   description?: string;
   keyFeatures?: string[];
   gallery?: IndustryGalleryItem[];
+  downloadButtons?: ProductDownloadButtons;
 };
 
 export type IndustryItem = {
@@ -74,6 +85,34 @@ export function getProductGallery(product: IndustryProduct): IndustryGalleryItem
     return [{ id: `${product.id}-main`, src: product.image, alt: product.name, type: "image" }];
   }
   return [];
+}
+
+export function getVisibleProductDownloadButtons(product: IndustryProduct): {
+  brochure: { url: string; fileName: string } | null;
+  model3d: { url: string; fileName: string } | null;
+} {
+  const cfg = product.downloadButtons;
+  if (!cfg?.enabled) {
+    return { brochure: null, model3d: null };
+  }
+
+  const brochure =
+    cfg.showBrochure !== false && cfg.brochureUrl?.trim()
+      ? {
+          url: cfg.brochureUrl.trim(),
+          fileName: cfg.brochureFileName?.trim() || "brochure",
+        }
+      : null;
+
+  const model3d =
+    cfg.showModel3d !== false && cfg.model3dUrl?.trim()
+      ? {
+          url: cfg.model3dUrl.trim(),
+          fileName: cfg.model3dFileName?.trim() || "3d-model",
+        }
+      : null;
+
+  return { brochure, model3d };
 }
 
 /** @deprecated use getProductGallery */

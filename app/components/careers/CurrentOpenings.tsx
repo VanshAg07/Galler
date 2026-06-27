@@ -221,7 +221,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                         <button
                           type="button"
                           onClick={() => openApplyModal(job)}
-                          className="rounded-md bg-[#c9a227] px-5 py-2 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#a8871f]"
+                          className="rounded-md bg-[#b8451a] px-5 py-2 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#a8871f]"
                         >
                           APPLY NOW
                         </button>
@@ -250,7 +250,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
               <button
                 type="button"
                 onClick={() => setResumeModalOpen(true)}
-                className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#c9a227] px-5 py-2.5 font-century text-[15px] font-semibold text-[#c9a227] transition-colors hover:bg-[#c9a227] hover:text-white"
+                className="mt-5 inline-flex items-center gap-2 rounded-md border border-[#b8451a] px-5 py-2.5 font-century text-[15px] font-semibold text-[#b8451a] transition-colors hover:bg-[#b8451a] hover:text-white"
               >
                 {sidebar.ctaButtonText}
               </button>
@@ -277,7 +277,7 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
                   onChange={(e) => setEmail(e.target.value)}
                   className="flex-1 rounded-md border border-[#ddd] px-4 py-2.5 font-century text-[15px] outline-none focus:border-[#0b1f4a]"
                 />
-                <button className="flex items-center justify-center rounded-md bg-[#c9a227] px-4 py-2.5 text-white transition-colors hover:bg-[#a8871f]">
+                <button className="flex items-center justify-center rounded-md bg-[#b8451a] px-4 py-2.5 text-white transition-colors hover:bg-[#a8871f]">
                   <svg
                     width="18"
                     height="18"

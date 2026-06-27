@@ -81,7 +81,7 @@ export default function WhyWorkAtGaller({ content }: WhyWorkAtGallerProps) {
               transition={{ duration: 0.55, ease: entryEase, delay: index * 0.08 }}
             >
               <motion.div
-                className="mx-auto flex h-16 w-16 items-center justify-center text-[#c9a227]"
+                className="mx-auto flex h-16 w-16 items-center justify-center text-[#b8451a]"
                 initial={{ opacity: 0, y: -30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewport}

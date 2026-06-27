@@ -52,16 +52,9 @@ export default function HiringProcess({ content }: HiringProcessProps) {
         >
           {section.heading}
         </TextAnimate>
-        <motion.div
-          className="mx-auto mt-3 h-0.5 w-16 bg-[#c9a227]"
-          initial={{ opacity: 0, scaleX: 0 }}
-          whileInView={{ opacity: 1, scaleX: 1 }}
-          viewport={viewport}
-          transition={{ duration: 0.5, ease: entryEase, delay: 0.1 }}
-        />
 
         <div className="relative mt-12">
-          <div className="absolute left-0 right-0 top-12 hidden h-0.5 border-t-2 border-dashed border-[#c9a227] lg:block" />
+          <div className="absolute left-0 right-0 top-12 hidden h-0.5 border-t-2 border-dashed border-[#b8451a] lg:block" />
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-6">
             {steps.map((step, index) => (
@@ -139,7 +132,7 @@ export default function HiringProcess({ content }: HiringProcessProps) {
             </a>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 rounded-md bg-[#c9a227] px-5 py-2.5 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#a8871f]"
+              className="inline-flex items-center gap-2 rounded-md bg-[#b8451a] px-5 py-2.5 font-century text-[15px] font-semibold text-white transition-colors hover:bg-[#a8871f]"
             >
               {banner.buttonText}
               <svg

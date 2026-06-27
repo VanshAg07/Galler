@@ -3,17 +3,10 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
-
-interface Industry {
-  id: string;
-  slug?: string;
-  name: string;
-  icon?: string;
-  image?: string;
-}
+import { getIndustrySlug, type IndustryItem } from "@/app/lib/industries-types";
 
 interface ProjectsIndustriesGridProps {
-  industries: Industry[];
+  industries: IndustryItem[];
 }
 
 const entryEase = [0.25, 0.1, 0.25, 1] as const;
@@ -43,7 +36,7 @@ export default function ProjectsIndustriesGrid({ industries }: ProjectsIndustrie
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {industries.map((industry, index) => {
-            const slug = industry.slug || industry.name.toLowerCase().replace(/\s+/g, "-");
+            const slug = getIndustrySlug(industry);
             const cardImage = industry.image ? resolveUploadSrc(industry.image) : "";
 
             return (
@@ -72,22 +65,6 @@ export default function ProjectsIndustriesGrid({ industries }: ProjectsIndustrie
                   )}
 
                   <div className="relative z-10 mt-auto flex w-full flex-col">
-                    {industry.icon ? (
-                      <motion.div
-                        className="absolute left-8 top-8 flex h-14 w-14 items-center justify-center rounded-lg bg-white/80 shadow-sm"
-                        initial={{ opacity: 0, y: -30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={viewport}
-                        transition={{ duration: 0.5, ease: entryEase, delay: index * 0.08 + 0.05 }}
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={resolveUploadSrc(industry.icon)}
-                          alt=""
-                          className="h-9 w-9 object-contain"
-                        />
-                      </motion.div>
-                    ) : null}
                     <div>
                       <motion.h3
                         className="font-cinzel text-[20px] font-normal leading-[1.08] tracking-tight text-gray-900 transition-colors group-hover:text-primary md:text-[30px]"

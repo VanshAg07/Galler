@@ -11,6 +11,7 @@ import {
   MARQUEE_SLOT_DISPLAY_HEIGHT,
 } from "@/app/lib/marquee-config";
 import { enrichCareersJob } from "@/app/lib/careers-data";
+import { adminFetch } from "@/app/lib/adminApi";
 
 import { API_URL } from "@/app/lib/apiUrl";
 
@@ -22,8 +23,8 @@ type SidebarGroup = {
 
 const sidebarGroups: SidebarGroup[] = [
   { label: "Homepage", items: [{ label: "Hero Section", id: "home-hero" }, { label: "About Section", id: "home-about" }, { label: "Our Services Section", id: "home-our-services" }, { label: "Industries Section", id: "home-industries" }, { label: "Logo Marquee", id: "home-marquee" }] },
-  { label: "Industries", items: [{ label: "Industries Details", id: "industries-details" }] },
-  { label: "Projects Page", items: [{ label: "Hero Section", id: "projects-hero" }, { label: "Industries", id: "projects-industries" }] },
+  { label: "Industries", items: [{ label: "Industries & Products", id: "industries-details" }] },
+  { label: "Projects Page", items: [{ label: "Hero Section", id: "projects-hero" }] },
   { label: "About Page", items: [{ label: "Hero Section", id: "about-hero-content" }, { label: "Intro Section", id: "about-intro-section" }, { label: "Journey Timeline", id: "about-journey-timeline" }, { label: "Dimensions", id: "about-dimensions" }, { label: "Our Team", id: "about-team" }, { label: "Achievements", id: "about-achievements" }, { label: "Requirement Form", id: "about-requirement" }] },
   { label: "Contact Page", items: [{ label: "Contact Info", id: "contact" }, { label: "Form Submissions", id: "contact-submissions" }] },
   { label: "Careers Page", items: [{ label: "Hero Section", id: "careers-hero" }, { label: "Why Work at Galler", id: "careers-why-work" }, { label: "Life at Galler", id: "careers-life" }, { label: "Openings Sidebar", id: "careers-openings-sidebar" }, { label: "Hiring Process", id: "careers-hiring" }, { label: "Job Openings", id: "careers-jobs" }, { label: "General Resumes", id: "careers-resumes" }, { label: "Job Applications", id: "careers-applications" }] },
@@ -136,14 +137,13 @@ export default function AdminDashboard() {
   const [uploadingCareersGalleryIndex, setUploadingCareersGalleryIndex] = useState<number | null>(null);
   const [uploadingIndustryIndex, setUploadingIndustryIndex] = useState<number | null>(null);
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>("");
-  const [selectedProjectIndustryId, setSelectedProjectIndustryId] = useState<string>("");
   const [uploadingProductImageKey, setUploadingProductImageKey] = useState<string | null>(null);
   const [uploadingProductGalleryKey, setUploadingProductGalleryKey] = useState<string | null>(null);
+  const [uploadingProductDocumentKey, setUploadingProductDocumentKey] = useState<string | null>(null);
   const [uploadingRequirementBg, setUploadingRequirementBg] = useState(false);
   const [uploadingJourneyBg, setUploadingJourneyBg] = useState(false);
   const [uploadingTeamMemberIndex, setUploadingTeamMemberIndex] = useState<number | null>(null);
   const [uploadingProjectsHeroImage, setUploadingProjectsHeroImage] = useState(false);
-  const [uploadingProjectIndustryIndex, setUploadingProjectIndustryIndex] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<Record<string, boolean>>({
     Homepage: true,
     Industries: true,
@@ -154,50 +154,42 @@ export default function AdminDashboard() {
     Footer: false,
   });
 
-  const getToken = () => localStorage.getItem("galler_admin_token");
-
   const fetchContactSubmissions = useCallback(async () => {
-    const token = getToken();
-    if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/api/contact`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await adminFetch("/api/contact");
       if (res.ok) setContactSubmissions(await res.json());
     } catch {
-      console.error("Failed to fetch contact submissions");
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch contact submissions");
+      }
     }
   }, []);
 
   const fetchResumeSubmissions = useCallback(async () => {
-    const token = getToken();
-    if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/api/careers/resumes`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await adminFetch("/api/careers/resumes");
       if (res.ok) setResumeSubmissions(await res.json());
     } catch {
-      console.error("Failed to fetch resume submissions");
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch resume submissions");
+      }
     }
   }, []);
 
   const fetchJobApplications = useCallback(async () => {
-    const token = getToken();
-    if (!token) return;
     try {
-      const res = await fetch(`${API_URL}/api/careers/applications`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await adminFetch("/api/careers/applications");
       if (res.ok) setJobApplications(await res.json());
     } catch {
-      console.error("Failed to fetch job applications");
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch job applications");
+      }
     }
   }, []);
 
   const fetchCareersJobs = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/careers/jobs`);
+      const res = await adminFetch("/api/careers/jobs");
       if (res.ok) {
         const data = await res.json();
         if (Array.isArray(data)) {
@@ -205,27 +197,29 @@ export default function AdminDashboard() {
         }
       }
     } catch {
-      console.error("Failed to fetch careers jobs");
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch careers jobs");
+      }
     }
   }, []);
 
   const fetchAll = useCallback(async () => {
     try {
-      const contentRes = await fetch(`${API_URL}/api/content`);
+      const contentRes = await adminFetch("/api/content");
       if (contentRes.ok) setContent(await contentRes.json());
     } catch {
-      console.error("Failed to fetch data");
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch data");
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) { router.push("/admin/login"); return; }
-    fetch(`${API_URL}/api/auth/verify`, { method: "POST", headers: { Authorization: `Bearer ${token}` } })
+    adminFetch("/api/auth/verify", { method: "POST" })
       .then((res) => { if (!res.ok) throw new Error(); return fetchAll(); })
-      .catch(() => { localStorage.removeItem("galler_admin_token"); router.push("/admin/login"); });
+      .catch(() => { router.push("/admin/login"); });
   }, [router, fetchAll]);
 
   useEffect(() => {
@@ -253,11 +247,8 @@ export default function AdminDashboard() {
   }, [activeSection, fetchCareersJobs]);
 
   const markSubmissionRead = async (id: string) => {
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/contact/${id}/read`, {
+    const res = await adminFetch(`/api/contact/${id}/read`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
       const updated = await res.json();
@@ -267,11 +258,8 @@ export default function AdminDashboard() {
   };
 
   const markResumeRead = async (id: string) => {
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/careers/resumes/${id}/read`, {
+    const res = await adminFetch(`/api/careers/resumes/${id}/read`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
       const updated = await res.json();
@@ -281,11 +269,7 @@ export default function AdminDashboard() {
   };
 
   const downloadResume = async (id: string, fileName: string) => {
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/careers/resumes/${id}/download`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await adminFetch(`/api/careers/resumes/${id}/download`);
     if (!res.ok) {
       alert("Failed to download resume.");
       return;
@@ -302,11 +286,7 @@ export default function AdminDashboard() {
   };
 
   const downloadJobApplication = async (id: string, fileName: string) => {
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/careers/applications/${id}/download`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await adminFetch(`/api/careers/applications/${id}/download`);
     if (!res.ok) {
       alert("Failed to download resume.");
       return;
@@ -323,11 +303,8 @@ export default function AdminDashboard() {
   };
 
   const markApplicationRead = async (id: string) => {
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/careers/applications/${id}/read`, {
+    const res = await adminFetch(`/api/careers/applications/${id}/read`, {
       method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (res.ok) {
       const updated = await res.json();
@@ -337,9 +314,6 @@ export default function AdminDashboard() {
   };
 
   const saveCareersJob = async (job: CareersJobData) => {
-    const token = getToken();
-    if (!token) return;
-
     const descriptionPoints = job.descriptionPoints.map((point) => point.trim()).filter(Boolean);
     if (descriptionPoints.length === 0) {
       alert("Please add at least one description point.");
@@ -350,12 +324,11 @@ export default function AdminDashboard() {
       job as CareersJobData & { description?: string };
     const payload = { ...jobWithoutLegacyDescription, descriptionPoints };
     const isNew = !job.id;
-    const res = await fetch(
-      isNew ? `${API_URL}/api/careers/jobs` : `${API_URL}/api/careers/jobs/${job.id}`,
+    const res = await adminFetch(
+      isNew ? "/api/careers/jobs" : `/api/careers/jobs/${job.id}`,
       {
         method: isNew ? "POST" : "PUT",
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
@@ -374,11 +347,8 @@ export default function AdminDashboard() {
 
   const deleteCareersJob = async (id: string) => {
     if (!confirm("Delete this job opening?")) return;
-    const token = getToken();
-    if (!token) return;
-    const res = await fetch(`${API_URL}/api/careers/jobs/${id}`, {
+    const res = await adminFetch(`/api/careers/jobs/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -410,9 +380,6 @@ export default function AdminDashboard() {
   };
 
   const handleSave = async () => {
-    const token = getToken();
-    if (!token) return;
-
     if (activeSection === "home-industries" || activeSection === "industries-details") {
       const validationError = validateHomeIndustriesBeforeSave();
       if (validationError) {
@@ -429,7 +396,6 @@ export default function AdminDashboard() {
       else if (activeSection === "home-industries") await saveContentSection("homeIndustries");
       else if (activeSection === "industries-details") await saveContentSection("homeIndustries");
       else if (activeSection === "projects-hero") await saveContentSection("projectsPage");
-      else if (activeSection === "projects-industries") await saveContentSection("projectsPage");
       else if (activeSection === "home-marquee") await saveContentSection("marquee");
       else if (activeSection === "about-hero-content") await saveContentSection("about");
       else if (activeSection.startsWith("about-")) await saveContentSection("aboutPage");
@@ -446,17 +412,15 @@ export default function AdminDashboard() {
   };
 
   const saveContentSection = async (section: string) => {
-    const token = getToken();
-    await fetch(`${API_URL}/api/content/${section}`, {
+    await adminFetch(`/api/content/${section}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(content[section]),
     });
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("galler_admin_token");
-    localStorage.removeItem("galler_admin_user");
+  const handleLogout = async () => {
+    await adminFetch("/api/auth/logout", { method: "POST" });
     router.push("/admin/login");
   };
 
@@ -539,14 +503,10 @@ export default function AdminDashboard() {
   };
 
   const uploadImage = async (file: File): Promise<string> => {
-    const token = getToken();
-    if (!token) throw new Error("Not logged in. Please sign in again.");
-
     const formData = new FormData();
     formData.append("image", file);
-    const res = await fetch(`${API_URL}/api/upload`, {
+    const res = await adminFetch("/api/upload", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
 
@@ -560,15 +520,35 @@ export default function AdminDashboard() {
     return data.url;
   };
 
+  const uploadDocument = async (file: File): Promise<{ url: string; fileName: string }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload/document", {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+
+    const data = (await res.json().catch(() => null)) as {
+      url?: string;
+      fileName?: string;
+      message?: string;
+    } | null;
+    if (!res.ok) {
+      throw new Error(data?.message || "Upload failed");
+    }
+    if (!data?.url) {
+      throw new Error("Upload failed — no file URL returned");
+    }
+    return { url: data.url, fileName: data.fileName || file.name };
+  };
+
   const uploadMarqueeLogo = uploadImage;
 
   const persistMarqueeLogos = async (logos: { id: string; src: string; alt: string }[]) => {
-    const token = getToken();
-    if (!token) throw new Error("Not logged in. Please sign in again.");
-
-    const res = await fetch(`${API_URL}/api/content/marquee`, {
+    const res = await adminFetch("/api/content/marquee", {
       method: "PUT",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ logos }),
     });
 
@@ -581,13 +561,10 @@ export default function AdminDashboard() {
   };
 
   const uploadHeroVideo = async (file: File): Promise<string | null> => {
-    const token = getToken();
-    if (!token) return null;
     const formData = new FormData();
     formData.append("video", file);
-    const res = await fetch(`${API_URL}/api/upload/video`, {
+    const res = await adminFetch("/api/upload/video", {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
     if (!res.ok) {
@@ -600,15 +577,11 @@ export default function AdminDashboard() {
   };
 
   const deleteHeroVideo = async (url: string): Promise<boolean> => {
-    const token = getToken();
-    if (!token) return false;
-
     if (url.startsWith("/uploads/")) {
-      const res = await fetch(`${API_URL}/api/upload`, {
+      const res = await adminFetch("/api/upload", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ url }),
       });
@@ -996,7 +969,9 @@ export default function AdminDashboard() {
     return (
       <div className="flex flex-col gap-6">
         <h2 className="text-2xl font-bold text-[#1a1a1a]">Industries Section</h2>
-        <p className="text-sm text-gray-500">Manage homepage industry cards and their images.</p>
+        <p className="text-sm text-gray-500">
+          Manage homepage industry cards and their images. These same industries appear on the Our Projects page.
+        </p>
 
         <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
           {renderField("homeIndustries", "title", "Section Title")}
@@ -1126,6 +1101,15 @@ export default function AdminDashboard() {
       description?: string;
       keyFeatures?: string[];
       gallery?: GalleryItem[];
+      downloadButtons?: {
+        enabled?: boolean;
+        showBrochure?: boolean;
+        showModel3d?: boolean;
+        brochureUrl?: string;
+        brochureFileName?: string;
+        model3dUrl?: string;
+        model3dFileName?: string;
+      };
     };
     type IndustryItem = {
       id: string;
@@ -1185,9 +1169,9 @@ export default function AdminDashboard() {
 
     return (
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-bold text-[#1a1a1a]">Industries Details</h2>
+        <h2 className="text-2xl font-bold text-[#1a1a1a]">Industries & Products</h2>
         <p className="text-sm text-gray-500">
-          Select an industry and manage its products (e.g. DC Energy Meter) with descriptions, features, and gallery images.
+          Manage industry products shown on the homepage, Our Projects page, and product detail pages.
         </p>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
@@ -1205,7 +1189,7 @@ export default function AdminDashboard() {
           </select>
           {industry ? (
             <p className="mt-2 text-xs text-gray-500">
-              Products appear at /industries/{industrySlug}/[product-slug]
+              Products appear at /projects/{industrySlug}/[product-slug]
             </p>
           ) : null}
         </div>
@@ -1227,6 +1211,11 @@ export default function AdminDashboard() {
                   description: "",
                   keyFeatures: [""],
                   gallery: [],
+                  downloadButtons: {
+                    enabled: false,
+                    showBrochure: true,
+                    showModel3d: true,
+                  },
                 },
               ])
             }
@@ -1251,6 +1240,15 @@ export default function AdminDashboard() {
 
             const updateGallery = (next: GalleryItem[]) => updateProduct({ gallery: next });
             const updateKeyFeatures = (next: string[]) => updateProduct({ keyFeatures: next });
+            const downloadButtons = product.downloadButtons ?? {
+              enabled: false,
+              showBrochure: true,
+              showModel3d: true,
+            };
+
+            const updateDownloadButtons = (
+              patch: Partial<NonNullable<IndustryProduct["downloadButtons"]>>
+            ) => updateProduct({ downloadButtons: { ...downloadButtons, ...patch } });
 
             return (
               <div key={product.id} className="flex flex-col gap-5 rounded-2xl bg-white p-6 shadow-sm">
@@ -1258,7 +1256,7 @@ export default function AdminDashboard() {
                   <div>
                     <h4 className="text-sm font-semibold text-[#1a1a1a]">{product.name || `Product ${pi + 1}`}</h4>
                     <p className="mt-1 text-xs text-gray-500">
-                      /industries/{industrySlug}/{productSlug}
+                      /projects/{industrySlug}/{productSlug}
                     </p>
                   </div>
                   <button
@@ -1379,6 +1377,174 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                   ))}
+                </div>
+
+                <div className="flex flex-col gap-4 border-t border-gray-100 pt-4">
+                  <div>
+                    <label className="text-xs font-semibold text-gray-700">Download Buttons</label>
+                    <p className="mt-1 text-xs text-gray-500">
+                      Hidden by default. Enable to show Download Brochure and/or 3D Model on the product page.
+                    </p>
+                  </div>
+
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={downloadButtons.enabled ?? false}
+                      onChange={(e) => updateDownloadButtons({ enabled: e.target.checked })}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    Enable download buttons on product page
+                  </label>
+
+                  {downloadButtons.enabled ? (
+                    <div className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex flex-wrap gap-6">
+                        <label className="flex items-center gap-2 text-sm text-gray-700">
+                          <input
+                            type="checkbox"
+                            checked={downloadButtons.showBrochure ?? true}
+                            onChange={(e) => updateDownloadButtons({ showBrochure: e.target.checked })}
+                            className="h-4 w-4 rounded border-gray-300"
+                          />
+                          Show Download Brochure
+                        </label>
+                        <label className="flex items-center gap-2 text-sm text-gray-700">
+                          <input
+                            type="checkbox"
+                            checked={downloadButtons.showModel3d ?? true}
+                            onChange={(e) => updateDownloadButtons({ showModel3d: e.target.checked })}
+                            className="h-4 w-4 rounded border-gray-300"
+                          />
+                          Show 3D Model button
+                        </label>
+                      </div>
+
+                      {downloadButtons.showBrochure !== false ? (
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-medium text-gray-500">
+                            Brochure file (PDF, DOC, DOCX — max 100MB)
+                          </label>
+                          {downloadButtons.brochureUrl ? (
+                            <p className="text-xs text-gray-600">
+                              {downloadButtons.brochureFileName || "Brochure uploaded"}
+                            </p>
+                          ) : null}
+                          <div className="flex flex-wrap gap-2">
+                            <label
+                              className={`cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProductDocumentKey === `${industryIndex}-${pi}-brochure` ? "pointer-events-none opacity-50" : ""}`}
+                            >
+                              {uploadingProductDocumentKey === `${industryIndex}-${pi}-brochure`
+                                ? "Uploading…"
+                                : downloadButtons.brochureUrl
+                                  ? "Replace brochure"
+                                  : "Upload brochure"}
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                className="hidden"
+                                disabled={uploadingProductDocumentKey === `${industryIndex}-${pi}-brochure`}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const uploadKey = `${industryIndex}-${pi}-brochure`;
+                                  setUploadingProductDocumentKey(uploadKey);
+                                  try {
+                                    const uploaded = await uploadDocument(file);
+                                    updateDownloadButtons({
+                                      brochureUrl: uploaded.url,
+                                      brochureFileName: uploaded.fileName,
+                                    });
+                                  } catch (err) {
+                                    alert(err instanceof Error ? err.message : "Upload failed");
+                                  } finally {
+                                    setUploadingProductDocumentKey(null);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+                            {downloadButtons.brochureUrl ? (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateDownloadButtons({
+                                    brochureUrl: "",
+                                    brochureFileName: "",
+                                  })
+                                }
+                                className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                              >
+                                Remove file
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {downloadButtons.showModel3d !== false ? (
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-medium text-gray-500">
+                            3D model file (PDF, DOC, DOCX, GLB, GLTF, OBJ, STL, STEP, STP, ZIP — max 100MB)
+                          </label>
+                          {downloadButtons.model3dUrl ? (
+                            <p className="text-xs text-gray-600">
+                              {downloadButtons.model3dFileName || "3D model uploaded"}
+                            </p>
+                          ) : null}
+                          <div className="flex flex-wrap gap-2">
+                            <label
+                              className={`cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProductDocumentKey === `${industryIndex}-${pi}-model3d` ? "pointer-events-none opacity-50" : ""}`}
+                            >
+                              {uploadingProductDocumentKey === `${industryIndex}-${pi}-model3d`
+                                ? "Uploading…"
+                                : downloadButtons.model3dUrl
+                                  ? "Replace 3D model"
+                                  : "Upload 3D model"}
+                              <input
+                                type="file"
+                                accept=".pdf,.doc,.docx,.glb,.gltf,.obj,.stl,.step,.stp,.zip"
+                                className="hidden"
+                                disabled={uploadingProductDocumentKey === `${industryIndex}-${pi}-model3d`}
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const uploadKey = `${industryIndex}-${pi}-model3d`;
+                                  setUploadingProductDocumentKey(uploadKey);
+                                  try {
+                                    const uploaded = await uploadDocument(file);
+                                    updateDownloadButtons({
+                                      model3dUrl: uploaded.url,
+                                      model3dFileName: uploaded.fileName,
+                                    });
+                                  } catch (err) {
+                                    alert(err instanceof Error ? err.message : "Upload failed");
+                                  } finally {
+                                    setUploadingProductDocumentKey(null);
+                                    e.target.value = "";
+                                  }
+                                }}
+                              />
+                            </label>
+                            {downloadButtons.model3dUrl ? (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateDownloadButtons({
+                                    model3dUrl: "",
+                                    model3dFileName: "",
+                                  })
+                                }
+                                className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                              >
+                                Remove file
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-col gap-3 border-t border-gray-100 pt-4">
@@ -2371,377 +2537,6 @@ export default function AdminDashboard() {
     );
   };
 
-  const renderProjectsIndustries = () => {
-    type Project = { id: string; name: string; features?: string[]; image?: string };
-    type Industry = {
-      id: string;
-      slug?: string;
-      name: string;
-      icon?: string;
-      image?: string;
-      projects?: Project[];
-    };
-
-    const projectsPage = (content.projectsPage as Record<string, unknown>) ?? {};
-    const industries = (projectsPage.industries as Industry[]) ?? [];
-
-    const updateIndustries = (next: Industry[]) => {
-      setContent((p) => ({
-        ...p,
-        projectsPage: { ...(p.projectsPage as Record<string, unknown>), industries: next },
-      }));
-    };
-
-    const activeProjectIndustryId = selectedProjectIndustryId || industries[0]?.id || "";
-    const selectedIndustry = industries.find((i) => i.id === activeProjectIndustryId);
-    const projects = selectedIndustry?.projects ?? [];
-
-    const updateProjects = (next: Project[]) => {
-      const nextIndustries = industries.map((i) =>
-        i.id === activeProjectIndustryId ? { ...i, projects: next } : i
-      );
-      updateIndustries(nextIndustries);
-    };
-
-    const resolvePreviewSrc = (src: string) => {
-      if (src.startsWith("/uploads/")) return `${API_URL}${src}`;
-      return src;
-    };
-
-    return (
-      <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-bold text-[#1a1a1a]">Projects Page — Industries & Projects</h2>
-
-        {/* Industries List */}
-        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-700">Industries</h3>
-            <button
-              type="button"
-              onClick={() =>
-                updateIndustries([
-                  ...industries,
-                  {
-                    id: String(Date.now()),
-                    slug: "",
-                    name: "NEW INDUSTRY",
-                    icon: "",
-                    image: "",
-                    projects: [],
-                  },
-                ])
-              }
-              className="rounded-lg bg-[var(--primary-orange)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b8451a]"
-            >
-              + Add Industry
-            </button>
-          </div>
-
-          {industries.length === 0 ? (
-            <p className="text-sm text-gray-400">No industries added yet</p>
-          ) : (
-            <div className="flex flex-col gap-4">
-              {industries.map((industry, i) => (
-                <div
-                  key={industry.id}
-                  className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
-                >
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex-1 min-w-[200px]">
-                      <label className="mb-1 block text-xs font-medium text-gray-500">Industry Name</label>
-                      <input
-                        type="text"
-                        value={industry.name}
-                        onChange={(e) => {
-                          const next = [...industries];
-                          next[i] = { ...next[i], name: e.target.value };
-                          updateIndustries(next);
-                        }}
-                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
-                        placeholder="Industry name"
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm(`Delete ${industry.name}?`)) {
-                          updateIndustries(industries.filter((_, idx) => idx !== i));
-                        }
-                      }}
-                      className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                    >
-                      Delete
-                    </button>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="text-xs font-medium text-gray-500">
-                      Card & Hero Background Image
-                    </label>
-                    <p className="text-xs text-gray-400">
-                      Shown on the industry card and as the hero background when that industry is opened.
-                    </p>
-                    <div className="flex flex-wrap items-start gap-4">
-                      <div className="h-24 w-40 shrink-0 overflow-hidden rounded-lg bg-gray-200">
-                        {industry.image ? (
-                          <img
-                            src={resolvePreviewSrc(industry.image)}
-                            alt={industry.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-xs text-gray-400">
-                            No image
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        <label
-                          className={`cursor-pointer rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProjectIndustryIndex === i ? "pointer-events-none opacity-50" : ""}`}
-                        >
-                          {uploadingProjectIndustryIndex === i
-                            ? "Uploading…"
-                            : industry.image
-                              ? "Replace image"
-                              : "Upload image"}
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,image/jpg"
-                            className="hidden"
-                            disabled={uploadingProjectIndustryIndex === i}
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (!file) return;
-                              setUploadingProjectIndustryIndex(i);
-                              try {
-                                const url = await uploadImage(file);
-                                const next = [...industries];
-                                next[i] = { ...next[i], image: url };
-                                updateIndustries(next);
-                              } catch (err) {
-                                alert(err instanceof Error ? err.message : "Upload failed");
-                              } finally {
-                                setUploadingProjectIndustryIndex(null);
-                                e.target.value = "";
-                              }
-                            }}
-                          />
-                        </label>
-                        {industry.image ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const next = [...industries];
-                              next[i] = { ...next[i], image: "" };
-                              updateIndustries(next);
-                            }}
-                            className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
-                          >
-                            Remove
-                          </button>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Projects Management */}
-        {industries.length > 0 && (
-          <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-gray-700">Manage Projects</h3>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <label className="text-xs font-medium text-gray-500">Select Industry</label>
-              <select
-                value={activeProjectIndustryId}
-                onChange={(e) => setSelectedProjectIndustryId(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
-              >
-                {industries.map((ind) => (
-                  <option key={ind.id} value={ind.id}>
-                    {ind.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <hr className="border-gray-100" />
-
-            <div className="flex items-center justify-between">
-              <h4 className="text-sm font-semibold text-gray-700">
-                Projects in {selectedIndustry?.name ?? "Industry"}
-              </h4>
-              <button
-                type="button"
-                onClick={() =>
-                  updateProjects([
-                    ...projects,
-                    {
-                      id: String(Date.now()),
-                      name: "New Project",
-                      features: [""],
-                      image: "",
-                    },
-                  ])
-                }
-                className="rounded-lg bg-[var(--primary-orange)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b8451a]"
-              >
-                + Add Project
-              </button>
-            </div>
-
-            {projects.length === 0 ? (
-              <p className="text-sm text-gray-400">No projects added yet</p>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {projects.map((project, pi) => {
-                  const uploadKey = `project-${activeProjectIndustryId}-${pi}`;
-                  return (
-                    <div
-                      key={project.id}
-                      className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
-                    >
-                      <div className="flex items-start gap-4">
-                        <div className="h-24 w-32 shrink-0 overflow-hidden rounded-lg bg-gray-200">
-                          {project.image ? (
-                            <img
-                              src={resolvePreviewSrc(project.image)}
-                              alt={project.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-xs text-gray-400">
-                              No image
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="flex-1 space-y-3">
-                          <input
-                            type="text"
-                            value={project.name}
-                            onChange={(e) => {
-                              const next = [...projects];
-                              next[pi] = { ...next[pi], name: e.target.value };
-                              updateProjects(next);
-                            }}
-                            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
-                            placeholder="Project name"
-                          />
-
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <label className="text-xs font-medium text-gray-500">Features (Bullet Points)</label>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const next = [...projects];
-                                  next[pi] = { 
-                                    ...next[pi], 
-                                    features: [...(next[pi].features ?? []), ""] 
-                                  };
-                                  updateProjects(next);
-                                }}
-                                className="text-xs font-medium text-primary hover:underline"
-                              >
-                                + Add Feature
-                              </button>
-                            </div>
-                            
-                            {(project.features ?? []).map((feature, fi) => (
-                              <div key={fi} className="flex gap-2">
-                                <input
-                                  type="text"
-                                  value={feature}
-                                  onChange={(e) => {
-                                    const next = [...projects];
-                                    const features = [...(next[pi].features ?? [])];
-                                    features[fi] = e.target.value;
-                                    next[pi] = { ...next[pi], features };
-                                    updateProjects(next);
-                                  }}
-                                  className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-[var(--primary-orange)]"
-                                  placeholder="Feature description"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const next = [...projects];
-                                    const features = (next[pi].features ?? []).filter((_, idx) => idx !== fi);
-                                    next[pi] = { ...next[pi], features };
-                                    updateProjects(next);
-                                  }}
-                                  className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="flex flex-wrap gap-2">
-                            <label
-                              className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingProductImageKey === uploadKey ? "pointer-events-none opacity-50" : ""}`}
-                            >
-                              {uploadingProductImageKey === uploadKey
-                                ? "Uploading…"
-                                : project.image
-                                  ? "Replace image"
-                                  : "Upload image"}
-                              <input
-                                type="file"
-                                accept="image/png,image/jpeg,image/webp,image/jpg"
-                                className="hidden"
-                                disabled={uploadingProductImageKey === uploadKey}
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  setUploadingProductImageKey(uploadKey);
-                                  try {
-                                    const url = await uploadImage(file);
-                                    const next = [...projects];
-                                    next[pi] = { ...next[pi], image: url };
-                                    updateProjects(next);
-                                  } catch (err) {
-                                    alert(err instanceof Error ? err.message : "Upload failed");
-                                  } finally {
-                                    setUploadingProductImageKey(null);
-                                    e.target.value = "";
-                                  }
-                                }}
-                              />
-                            </label>
-
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (confirm(`Delete ${project.name}?`)) {
-                                  updateProjects(projects.filter((_, idx) => idx !== pi));
-                                }
-                              }}
-                              className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   const renderContact = () => {
     type Plant = { name: string; address: string; image?: string };
@@ -3921,7 +3716,6 @@ export default function AdminDashboard() {
     if (activeSection === "about-achievements") return renderAboutAchievements();
     if (activeSection === "about-requirement") return renderAboutRequirement();
     if (activeSection === "projects-hero") return renderProjectsHero();
-    if (activeSection === "projects-industries") return renderProjectsIndustries();
     if (activeSection === "contact") return renderContact();
     if (activeSection === "contact-submissions") return renderContactSubmissions();
     if (activeSection === "careers-hero") return renderCareersHero();

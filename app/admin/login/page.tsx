@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { API_URL } from "@/app/lib/apiUrl";
+import { adminFetch } from "@/app/lib/adminApi";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function AdminLogin() {
         return;
       }
 
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const res = await adminFetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -41,8 +41,6 @@ export default function AdminLogin() {
         return;
       }
 
-      localStorage.setItem("galler_admin_token", data.token);
-      localStorage.setItem("galler_admin_user", JSON.stringify(data.user));
       router.push("/admin");
     } catch {
       setError("Unable to connect to server. Make sure the backend is running.");

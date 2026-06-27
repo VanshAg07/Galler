@@ -46,7 +46,7 @@ export default function ContactLocations({ plants = DEFAULT_PLANTS }: ContactLoc
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 lg:grid-cols-2 lg:gap-14 lg:px-10">
         <div>
           <motion.h2
-            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#000]"
             initial={{ opacity: 0, y: -40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewport}
@@ -74,7 +74,7 @@ export default function ContactLocations({ plants = DEFAULT_PLANTS }: ContactLoc
 
         <div>
           <motion.h2
-            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#000]"
             initial={{ opacity: 0, y: -40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewport}

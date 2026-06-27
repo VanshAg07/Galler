@@ -87,7 +87,9 @@ router.post(
       });
 
       if (result.error) {
-        console.error('Resend error:', result.error.message || result.error);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error('Resend error:', result.error.message || result.error);
+        }
         return res.status(201).json({
           message: 'Your message was received. Email notification could not be sent.',
           id: submission.id,
@@ -105,7 +107,9 @@ router.post(
         emailSent: true,
       });
     } catch (err) {
-      console.error('Resend error:', err?.message || err);
+      if (process.env.NODE_ENV !== 'production') {
+        console.error('Resend error:', err?.message || err);
+      }
       return res.status(201).json({
         message: 'Your message was received. We could not send the email notification.',
         id: submission.id,

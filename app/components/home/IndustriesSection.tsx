@@ -26,7 +26,7 @@ const DEFAULTS: NonNullable<SiteContent["homeIndustries"]> = {
 
 function IndustryCard({ item }: { item: IndustryItem }) {
   const imageSrc = item.image ? resolveUploadSrc(item.image) : "";
-  const href = `/industries/${getIndustrySlug(item)}`;
+  const href = `/projects/${getIndustrySlug(item)}`;
 
   return (
     <Link href={href} className="block">

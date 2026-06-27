@@ -72,7 +72,7 @@ function InfoRow({ label, lines, hrefs, index }: ContactInfoItem & { index: numb
         }
       />
       <div>
-        <p className="font-century text-[15px] font-bold tracking-wide text-[#0b1f4a]">{label}</p>
+        <p className="font-century text-[15px] font-bold tracking-wide text-[#000]">{label}</p>
         <div className="mt-2 space-y-1">
           {lines.map((line, i) => {
             const href = hrefs?.[i];
@@ -191,7 +191,7 @@ export default function ContactMain({
         {/* Get In Touch */}
         <div className="lg:border-r lg:border-[#e0e0e0] lg:pr-14">
           <motion.h2
-            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#000]"
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={viewport}
@@ -209,7 +209,7 @@ export default function ContactMain({
         {/* Send Us A Message */}
         <div className="lg:pl-14">
           <motion.h2
-            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+            className="font-cinzel text-[30px] font-normal leading-[1.08] tracking-tight text-[#000]"
             initial={{ opacity: 0, x: 40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={viewport}
@@ -228,7 +228,7 @@ export default function ContactMain({
             >
               <div>
                 <label className="mb-1.5 block font-century text-[15px] text-[#555]">
-                  Full Name <span className="text-[#c9a227]">*</span>
+                  Full Name <span className="text-[#b8451a]">*</span>
                 </label>
                 <input
                   type="text"
@@ -260,7 +260,7 @@ export default function ContactMain({
             >
               <div>
                 <label className="mb-1.5 block font-century text-[15px] text-[#555]">
-                  Email Address <span className="text-[#c9a227]">*</span>
+                  Email Address <span className="text-[#b8451a]">*</span>
                 </label>
                 <input
                   type="email"
@@ -290,7 +290,7 @@ export default function ContactMain({
               transition={{ duration: 0.55, ease: entryEase, delay: 0.24 }}
             >
               <label className="mb-1.5 block font-century text-[15px] text-[#555]">
-                Subject <span className="text-[#c9a227]">*</span>
+                Subject <span className="text-[#b8451a]">*</span>
               </label>
               <select
                 name="subject"
@@ -317,7 +317,7 @@ export default function ContactMain({
               transition={{ duration: 0.55, ease: entryEase, delay: 0.32 }}
             >
               <label className="mb-1.5 block font-century text-[15px] text-[#555]">
-                Your Message <span className="text-[#c9a227]">*</span>
+                Your Message <span className="text-[#b8451a]">*</span>
               </label>
               <textarea
                 name="message"
@@ -349,7 +349,7 @@ export default function ContactMain({
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
-                  className="h-4 w-4 shrink-0 origin-center translate-x-2 rotate-0 text-[#c9a227] transition-transform duration-300 ease-out group-hover:translate-x-3 group-hover:rotate-[45deg]"
+                  className="h-4 w-4 shrink-0 origin-center translate-x-2 rotate-0 text-[#b8451a] transition-transform duration-300 ease-out group-hover:translate-x-3 group-hover:rotate-[45deg]"
                   aria-hidden
                 >
                   <path

@@ -277,90 +277,7 @@
       "subtitle": "Select an industry below to explore our successfully implemented projects",
       "ctaText": "START A PROJECT",
       "backgroundImage": "/uploads/image-1782202275420-64479874.jpg"
-    },
-    "industries": [
-      {
-        "id": "telecommunication",
-        "slug": "telecommunication",
-        "name": "TELECOMMUNICATION",
-        "icon": "",
-        "image": "/uploads/image-1782203472294-182380804.jpg",
-        "projects": [
-          {
-            "id": "access-control-locks",
-            "name": "Access Control Locks",
-            "features": [
-              "Enabling visitors or employees to access sites/doors via card",
-              "Preventing unauthorized access",
-              "Card-based authentication system",
-              "Real-time access monitoring"
-            ],
-            "image": ""
-          },
-          {
-            "id": "outdoor-cabinet-locks",
-            "name": "Outdoor Cabinet Locks",
-            "features": [
-              "Low power consumption locking solutions",
-              "Highly resistant and weatherproof",
-              "Designed for telecommunications cabinets",
-              "Remote monitoring capabilities"
-            ],
-            "image": ""
-          },
-          {
-            "id": "remote-telemetric-unit",
-            "name": "Remote Telemetric Unit",
-            "features": [
-              "IOT device for manifold utilities",
-              "Real-time data transmission",
-              "Multi-sensor integration",
-              "Cloud connectivity enabled"
-            ],
-            "image": ""
-          },
-          {
-            "id": "dc-energy-meter",
-            "name": "DC Energy Meter",
-            "features": [
-              "Multi-channel DC energy measurement",
-              "Designed to overcome telecom challenges",
-              "Accurate and reliable monitoring",
-              "Data logging and analytics",
-              "Remote configuration support"
-            ],
-            "image": ""
-          }
-        ]
-      },
-      {
-        "id": "petroleum",
-        "slug": "petroleum",
-        "name": "PETROLEUM",
-        "icon": "",
-        "image": "/uploads/image-1782203291277-968558819.jpg",
-        "projects": [
-          {
-            "id": "1782202593218",
-            "name": "New Project",
-            "features": [
-              "hello",
-              "hello",
-              "hello"
-            ],
-            "image": "/uploads/image-1782202601678-645663077.jpg"
-          }
-        ]
-      },
-      {
-        "id": "automobile",
-        "slug": "automobile",
-        "name": "AUTOMOBILE",
-        "icon": "",
-        "image": "/uploads/image-1782203339109-855343167.jpg",
-        "projects": []
-      }
-    ]
+    }
   },
   "homeServices": {
     "tagline": "WHAT WE DO",
@@ -416,52 +333,99 @@
         "id": "telecommunication",
         "slug": "telecommunication",
         "name": "TELECOMMUNICATION",
-        "image": "/uploads/image-1781957521668-975916412.jpeg",
+        "image": "/uploads/image-1782203472294-182380804.jpg",
         "products": [
           {
-            "id": "telecom-solutions",
-            "slug": "telecom-solutions",
-            "name": "TELECOMMUNICATION SOLUTIONS",
-            "image": "/uploads/image-1781957521668-975916412.jpeg",
-            "description": "Galler delivers end-to-end electronics manufacturing and IoT-enabled solutions for telecom infrastructure, network equipment, and communication devices deployed across India.",
+            "id": "access-control-locks",
+            "slug": "access-control-locks",
+            "name": "Access Control Locks",
+            "description": "Galler manufactures intelligent access control lock systems designed for telecom sites and secure facilities, enabling card-based authentication with real-time monitoring and unauthorized access prevention.",
             "keyFeatures": [
-              "Network equipment manufacturing",
-              "IoT-enabled telecom solutions",
-              "High-reliability PCB assembly",
+              "Enabling visitors or employees to access sites/doors via card",
+              "Preventing unauthorized access",
+              "Card-based authentication system",
+              "Real-time access monitoring",
+              "Enabling visitors or employees to access sites/doors via card",
               "New feature"
             ],
+            "image": "/uploads/image-1782569198779-822043936.jpeg",
             "gallery": [
               {
-                "id": "telecom-1",
-                "src": "/uploads/image-1781957521668-975916412.jpeg",
-                "alt": "Telecommunication",
+                "id": "1782569214290",
+                "src": "/uploads/image-1782569219253-17949473.jpeg",
                 "type": "image"
               },
               {
-                "id": "1781958565743",
-                "src": "/uploads/image-1781958570251-40064182.png",
-                "alt": "TELECOMMUNICATION",
+                "id": "1782569337907",
+                "src": "/uploads/image-1782569342112-845867061.png",
                 "type": "image"
               },
               {
-                "id": "1781958570942",
-                "src": "/uploads/image-1781958578009-290800.webp",
-                "alt": "TELECOMMUNICATION",
+                "id": "1782569342840",
+                "src": "/uploads/image-1782569346851-694541452.jpeg",
                 "type": "image"
               },
               {
-                "id": "1781958579692",
-                "src": "/uploads/image-1781958584417-200012830.jpeg",
-                "alt": "TELECOMMUNICATION",
+                "id": "1782569351123",
+                "src": "/uploads/image-1782569355467-637005781.jpeg",
                 "type": "image"
               },
               {
-                "id": "1781958587075",
-                "src": "/uploads/image-1781958593198-797348618.jpeg",
-                "alt": "TELECOMMUNICATION",
+                "id": "1782569365773",
+                "src": "/uploads/image-1782569369965-443843019.webp",
                 "type": "image"
               }
-            ]
+            ],
+            "downloadButtons": {
+              "enabled": true,
+              "showBrochure": true,
+              "showModel3d": false,
+              "brochureUrl": "/uploads/file-1782570321176-107293908.docx",
+              "brochureFileName": "Document1 2.docx"
+            }
+          },
+          {
+            "id": "outdoor-cabinet-locks",
+            "slug": "outdoor-cabinet-locks",
+            "name": "Outdoor Cabinet Locks",
+            "description": "Weatherproof, low-power locking solutions engineered for outdoor telecommunications cabinets, offering high durability and remote monitoring capabilities for field-deployed infrastructure.",
+            "keyFeatures": [
+              "Low power consumption locking solutions",
+              "Highly resistant and weatherproof",
+              "Designed for telecommunications cabinets",
+              "Remote monitoring capabilities"
+            ],
+            "image": "",
+            "gallery": []
+          },
+          {
+            "id": "remote-telemetric-unit",
+            "slug": "remote-telemetric-unit",
+            "name": "Remote Telemetric Unit",
+            "description": "An IoT-enabled telemetric unit for real-time data collection and transmission across telecom and utility applications, with multi-sensor integration and cloud connectivity.",
+            "keyFeatures": [
+              "IOT device for manifold utilities",
+              "Real-time data transmission",
+              "Multi-sensor integration",
+              "Cloud connectivity enabled"
+            ],
+            "image": "",
+            "gallery": []
+          },
+          {
+            "id": "dc-energy-meter",
+            "slug": "dc-energy-meter",
+            "name": "DC Energy Meter",
+            "description": "Multi-channel DC energy measurement device built to address telecom power monitoring challenges, with accurate logging, analytics, and remote configuration support.",
+            "keyFeatures": [
+              "Multi-channel DC energy measurement",
+              "Designed to overcome telecom challenges",
+              "Accurate and reliable monitoring",
+              "Data logging and analytics",
+              "Remote configuration support"
+            ],
+            "image": "",
+            "gallery": []
           }
         ]
       },
@@ -469,14 +433,28 @@
         "id": "petroleum",
         "slug": "petroleum",
         "name": "PETROLEUM",
-        "image": "/uploads/image-1781957525540-385575623.jpeg",
-        "products": []
+        "image": "/uploads/image-1782203291277-968558819.jpg",
+        "products": [
+          {
+            "id": "1782202593218",
+            "slug": "new-project",
+            "name": "New Project",
+            "description": "",
+            "keyFeatures": [
+              "hello",
+              "hello",
+              "hello"
+            ],
+            "image": "/uploads/image-1782202601678-645663077.jpg",
+            "gallery": []
+          }
+        ]
       },
       {
         "id": "automobile",
         "slug": "automobile",
         "name": "AUTOMOBILE",
-        "image": "/uploads/image-1781957530102-873688015.jpeg",
+        "image": "/uploads/image-1782203339109-855343167.jpg",
         "products": []
       },
       {

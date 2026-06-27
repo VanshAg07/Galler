@@ -4,6 +4,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
 const seed = require('./seed');
 
 const authRoutes = require('./routes/auth');
@@ -15,13 +17,33 @@ const careersRoutes = require('./routes/careers');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  ...(process.env.NODE_ENV !== 'production'
+    ? ['http://localhost:3000', 'http://127.0.0.1:3000']
+    : []),
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'https://your-production-domain.com',
+  origin(origin, callback) {
+    // Allow server-to-server / same-origin requests with no Origin header
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
 }));
 
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false,
+}));
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -95,8 +117,10 @@ async function start() {
   await seed();
 
   app.listen(PORT, () => {
-    console.log(`\n🚀 Galler CMS server running on http://localhost:${PORT}`);
-    console.log(`   Health check: http://localhost:${PORT}/api/health\n`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n🚀 Galler CMS server running on http://localhost:${PORT}`);
+      console.log(`   Health check: http://localhost:${PORT}/api/health\n`);
+    }
   });
 }
 

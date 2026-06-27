@@ -1,5 +1,6 @@
 import { API_URL } from "../lib/apiUrl";
 import type { SiteContent } from "../lib/getContent";
+import { getIndustriesFromContent } from "../lib/industries-data";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import ProjectsHero from "../components/projects/ProjectsHero";
@@ -29,8 +30,7 @@ async function getContentFromAPI(): Promise<SiteContent | null> {
 export default async function ProjectsPage() {
   const content = await getContentFromAPI();
   const projectsPage = content?.projectsPage;
-
-  const industries = projectsPage?.industries ?? [];
+  const industries = getIndustriesFromContent(content);
 
   return (
     <>

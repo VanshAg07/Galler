@@ -49,7 +49,7 @@ function DepartmentIcon({ type }: { type: Department["icon"] }) {
   const Icon = icons[type];
 
   return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#c9a227]">
+    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#e8e0d0] bg-white text-[#b8451a]">
       <Icon className="h-6 w-6" aria-hidden />
     </div>
   );
@@ -82,7 +82,7 @@ export default function ContactDepartments({
             </motion.div>
             <div className="min-w-0 pt-0.5">
               <motion.h3
-                className="font-cinzel text-[20px] md:text-[30px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a]"
+                className="font-cinzel text-[20px] md:text-[30px] font-normal leading-[1.08] tracking-tight text-[#000]"
                 initial={{ opacity: 0, x: -40 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={viewport}
@@ -101,7 +101,7 @@ export default function ContactDepartments({
               </motion.p>
               <motion.a
                 href={`mailto:${dept.email}`}
-                className="mt-3 inline-block font-century text-[15px] font-medium text-[#c9a227] transition-colors hover:text-[#a8871f]"
+                className="mt-3 inline-block font-century text-[15px] font-medium text-[#b8451a] transition-colors hover:text-[#a8871f]"
                 initial={{ opacity: 0, x: 40 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={viewport}

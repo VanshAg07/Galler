@@ -1,4 +1,5 @@
 import { getContent } from "./getContent";
+import type { SiteContent } from "./getContent";
 import {
   getIndustryProducts,
   getIndustrySlug,
@@ -17,8 +18,12 @@ export {
   slugifyIndustry,
 } from "./industries-types";
 
+export function getIndustriesFromContent(content: SiteContent | null | undefined): IndustryItem[] {
+  return content?.homeIndustries?.items ?? [];
+}
+
 export function getIndustries(): IndustryItem[] {
-  return getContent()?.homeIndustries?.items ?? [];
+  return getIndustriesFromContent(getContent());
 }
 
 export function getIndustryBySlug(slug: string): IndustryItem | undefined {

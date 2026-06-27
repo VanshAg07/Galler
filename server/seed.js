@@ -30,14 +30,18 @@ async function seed() {
     };
 
     writeJSON('admin.json', adminData);
-    console.log('✓ Default admin users created:');
-    console.log('  - admin@galler.com / admin123');
-    console.log('  - admin@gmail.com / admin123');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('✓ Default admin users created:');
+      console.log('  - admin@galler.com / admin123');
+      console.log('  - admin@gmail.com / admin123');
+    }
   }
 
   if (!exists('content.json')) {
     writeJSON('content.json', defaultContent);
-    console.log('✓ Default homepage content created');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('✓ Default homepage content created');
+    }
   }
 }
 

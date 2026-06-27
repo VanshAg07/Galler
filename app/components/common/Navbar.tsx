@@ -9,11 +9,11 @@ import logo from "@/Assets/logo.png";
 const NAV_GRADIENT = "linear-gradient(49deg, #051c2c 32%, #051c2c 32%, #0a3e65 64%)";
 
 const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Our Projects", href: "/projects" },
-  { label: "Careers", href: "/careers" },
-  { label: "Contact", href: "/contact" },
+  { id: "home", label: "Home", href: "/" },
+  { id: "about", label: "About Us", href: "/about" },
+  { id: "our projects", label: "Our Projects", href: "/projects" },
+  { id: "careers", label: "Careers", href: "/careers" },
+  { id: "contact", label: "Contact", href: "/contact" },
 ];
 
 const entryEase = [0.25, 0.1, 0.25, 1] as const;
@@ -53,7 +53,7 @@ export default function Navbar({
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-8 md:flex">
           {navLinks.map((link, index) => {
-            const isActive = activePage === link.label.toLowerCase();
+            const isActive = activePage === link.id;
             return (
               <motion.div
                 key={link.label}
@@ -146,7 +146,7 @@ export default function Navbar({
       >
         <nav className="flex flex-col gap-5">
           {navLinks.map((link) => {
-            const isActive = activePage === link.label.toLowerCase();
+            const isActive = activePage === link.id;
             return (
               <Link
                 key={link.label}

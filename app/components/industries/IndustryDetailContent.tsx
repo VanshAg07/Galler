@@ -5,9 +5,11 @@ import { useMemo, useState, type ReactNode } from "react";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import {
   getProductGallery,
+  getVisibleProductDownloadButtons,
   type IndustryGalleryItem,
   type IndustryProduct,
 } from "@/app/lib/industries-types";
+import { downloadUploadedFile } from "@/app/lib/downloadFile";
 
 function CornerBracketBox({ children }: { children: ReactNode }) {
   return (
@@ -36,9 +38,7 @@ function GalleryThumb({
     <button
       type="button"
       onClick={onClick}
-      className={`relative aspect-[4/3] min-w-0 flex-1 overflow-hidden border bg-white ${
-        active ? "border-[var(--primary-orange)]" : "border-gray-200"
-      }`}
+      className="relative aspect-[4/3] min-w-0 flex-1 overflow-hidden bg-white"
     >
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -82,6 +82,22 @@ export default function IndustryDetailContent({
     features.filter((_, i) => i % 2 === 0),
     features.filter((_, i) => i % 2 === 1),
   ];
+  const downloadButtons = getVisibleProductDownloadButtons(product);
+  const [downloading, setDownloading] = useState<"brochure" | "model3d" | null>(null);
+
+  const handleDownload = async (type: "brochure" | "model3d") => {
+    const file = type === "brochure" ? downloadButtons.brochure : downloadButtons.model3d;
+    if (!file) return;
+
+    setDownloading(type);
+    try {
+      await downloadUploadedFile(file.url, file.fileName);
+    } catch {
+      window.open(resolveUploadSrc(file.url), "_blank", "noopener,noreferrer");
+    } finally {
+      setDownloading(null);
+    }
+  };
 
   const selectImage = (index: number) => {
     setActiveIndex(index);
@@ -194,19 +210,10 @@ export default function IndustryDetailContent({
           <h1 className="font-serif text-3xl tracking-[0.08em] text-[#0b1f4a] sm:text-4xl md:text-[2.5rem]">
             {product.name}
           </h1>
-
-          <div className="mt-3 flex items-center gap-0.5" aria-hidden>
-            <div className="h-px w-10 bg-[#c9a227]" />
-            <div className="h-1 w-8 bg-[#c9a227]" />
-            <div className="h-px w-10 bg-[#c9a227]" />
-          </div>
-
-          <CornerBracketBox>
             <p className="text-sm leading-7 text-[#333] sm:text-[0.95rem] sm:leading-8">
               {product.description ||
                 "Add a basic description for this product from the admin panel."}
             </p>
-          </CornerBracketBox>
 
           {features.length > 0 ? (
             <div className="mt-8 sm:mt-10">
@@ -229,6 +236,31 @@ export default function IndustryDetailContent({
                   </ul>
                 ))}
               </div>
+            </div>
+          ) : null}
+
+          {downloadButtons.brochure || downloadButtons.model3d ? (
+            <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
+              {downloadButtons.brochure ? (
+                <button
+                  type="button"
+                  onClick={() => handleDownload("brochure")}
+                  disabled={downloading === "brochure"}
+                  className="inline-flex min-w-[180px] items-center justify-center rounded-xl bg-[#b8451a] px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-[#d4531a] disabled:opacity-60"
+                >
+                  {downloading === "brochure" ? "Downloading…" : "Download Brochure"}
+                </button>
+              ) : null}
+              {downloadButtons.model3d ? (
+                <button
+                  type="button"
+                  onClick={() => handleDownload("model3d")}
+                  disabled={downloading === "model3d"}
+                  className="inline-flex min-w-[180px] items-center justify-center rounded-full border-2 border-[#0b1f4a] px-6 py-3 text-sm font-medium tracking-wide text-[#0b1f4a] transition-colors hover:bg-[#0b1f4a] hover:text-white disabled:opacity-60"
+                >
+                  {downloading === "model3d" ? "Downloading…" : "3D Model"}
+                </button>
+              ) : null}
             </div>
           ) : null}
         </div>

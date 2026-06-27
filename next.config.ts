@@ -16,6 +16,59 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  experimental: {
+    proxyClientMaxBodySize: "100mb",
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api-backend/:path*",
+        destination: `${apiUrl}/:path*`,
+      },
+    ];
+  },
+  async headers() {
+    const apiHost = uploadHost !== "localhost" ? uploadHost : "localhost";
+    const apiProtocol = uploadProtocol;
+    const apiOrigin = `${apiProtocol}://${apiHost}${
+      uploadPort && uploadPort !== "443" && uploadPort !== "80" ? `:${uploadPort}` : ""
+    }`;
+
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=()",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+          {
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              `img-src 'self' data: blob: ${apiOrigin} https://maps.google.com https://maps.googleapis.com https://*.google.com https://*.gstatic.com`,
+              "font-src 'self' data:",
+              `connect-src 'self' ${apiOrigin}`,
+              "media-src 'self' blob: data:",
+              "frame-src 'self' https://maps.google.com https://www.google.com https://*.google.com",
+              "frame-ancestors 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+            ].join("; "),
+          },
+        ],
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

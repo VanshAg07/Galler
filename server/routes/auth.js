@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const { readJSON } = require('../utils/fileStore');
+const {
+  COOKIE_NAME,
+  getCookieOptions,
+  extractToken,
+  verifyToken,
+} = require('../utils/authToken');
 
 const router = express.Router();
 
@@ -42,8 +48,9 @@ router.post(
         { expiresIn: '24h' }
       );
 
+      res.cookie(COOKIE_NAME, token, getCookieOptions());
+
       res.json({
-        token,
         user: { id: user.id, email: user.email, name: user.name, role: user.role }
       });
     } catch (err) {
@@ -53,20 +60,23 @@ router.post(
 );
 
 router.post('/verify', (req, res) => {
-  const authHeader = req.headers.authorization;
+  const token = extractToken(req);
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!token) {
     return res.status(401).json({ valid: false, message: 'No token provided' });
   }
 
-  const token = authHeader.split(' ')[1];
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyToken(token);
     res.json({ valid: true, user: { id: decoded.id, email: decoded.email, role: decoded.role } });
   } catch (err) {
     res.status(401).json({ valid: false, message: 'Invalid or expired token' });
   }
+});
+
+router.post('/logout', (req, res) => {
+  res.clearCookie(COOKIE_NAME, getCookieOptions());
+  res.json({ message: 'Logged out successfully' });
 });
 
 module.exports = router;

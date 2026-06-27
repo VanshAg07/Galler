@@ -134,20 +134,6 @@ export interface SiteContent {
       ctaText: string;
       backgroundImage?: string;
     };
-    industries: {
-      id: string;
-      slug?: string;
-      name: string;
-      icon?: string;
-      image?: string;
-      projects?: {
-        id: string;
-        name: string;
-        description?: string;
-        features?: string[];
-        image?: string;
-      }[];
-    }[];
   };
   homeServices?: {
     tagline: string;
@@ -183,6 +169,15 @@ export interface SiteContent {
           type?: "image" | "video";
           videoUrl?: string;
         }[];
+        downloadButtons?: {
+          enabled?: boolean;
+          showBrochure?: boolean;
+          showModel3d?: boolean;
+          brochureUrl?: string;
+          brochureFileName?: string;
+          model3dUrl?: string;
+          model3dFileName?: string;
+        };
       }[];
       description?: string;
       keyFeatures?: string[];
