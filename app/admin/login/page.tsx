@@ -83,7 +83,7 @@ export default function AdminLogin() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@galler.com"
+                placeholder="user@gmail.com"
                 required
                 className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-[#1a1a1a] outline-none transition-colors focus:border-[var(--primary-orange)] focus:bg-white"
               />
@@ -121,17 +121,6 @@ export default function AdminLogin() {
               {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
-
-          <div className="mt-6 rounded-lg bg-amber-50 p-4">
-            <p className="text-xs font-medium text-amber-800">
-              Development credentials
-            </p>
-            <p className="mt-1 text-xs text-amber-600">
-              Email: admin@galler.com
-              <br />
-              Password: admin123
-            </p>
-          </div>
         </div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
