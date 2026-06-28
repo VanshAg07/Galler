@@ -379,9 +379,11 @@
             "downloadButtons": {
               "enabled": true,
               "showBrochure": true,
-              "showModel3d": false,
+              "showModel3d": true,
               "brochureUrl": "/uploads/file-1782570321176-107293908.docx",
-              "brochureFileName": "Document1 2.docx"
+              "brochureFileName": "Document1 2.docx",
+              "model3dUrl": "/uploads/file-1782616161039-768379606.docx",
+              "model3dFileName": "Document1 2.docx"
             }
           },
           {

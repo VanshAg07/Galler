@@ -28,7 +28,7 @@ const sidebarGroups: SidebarGroup[] = [
   { label: "About Page", items: [{ label: "Hero Section", id: "about-hero-content" }, { label: "Intro Section", id: "about-intro-section" }, { label: "Journey Timeline", id: "about-journey-timeline" }, { label: "Dimensions", id: "about-dimensions" }, { label: "Our Team", id: "about-team" }, { label: "Achievements", id: "about-achievements" }, { label: "Requirement Form", id: "about-requirement" }] },
   { label: "Contact Page", items: [{ label: "Contact Info", id: "contact" }, { label: "Form Submissions", id: "contact-submissions" }] },
   { label: "Careers Page", items: [{ label: "Hero Section", id: "careers-hero" }, { label: "Why Work at Galler", id: "careers-why-work" }, { label: "Life at Galler", id: "careers-life" }, { label: "Openings Sidebar", id: "careers-openings-sidebar" }, { label: "Hiring Process", id: "careers-hiring" }, { label: "Job Openings", id: "careers-jobs" }, { label: "General Resumes", id: "careers-resumes" }, { label: "Job Applications", id: "careers-applications" }] },
-  { label: "Footer", items: [{ label: "Footer Content", id: "footer" }] },
+  { label: "Footer", items: [{ label: "Footer Content", id: "footer" }, { label: "Newsletter Subscribers", id: "newsletter-subscribers" }, { label: "Send Newsletter", id: "newsletter-send" }] },
 ];
 
 /* ─── Types ───────────────────────────────────────────────────────────── */
@@ -90,6 +90,27 @@ interface JobApplication {
   createdAt: string;
 }
 
+interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  status: "active" | "unsubscribed";
+  source: string;
+  subscribedAt: string;
+  unsubscribedAt: string | null;
+}
+
+interface NewsletterCampaign {
+  id: string;
+  subject: string;
+  bodyPreview: string;
+  recipientCount: number;
+  sentCount: number;
+  failedCount: number;
+  emailConfigured?: boolean;
+  note?: string;
+  createdAt: string;
+}
+
 const JOB_CATEGORY_OPTIONS = [
   { value: "engineering", label: "Engineering" },
   { value: "sales", label: "Sales & Marketing" },
@@ -99,6 +120,12 @@ const JOB_CATEGORY_OPTIONS = [
 ] as const;
 
 const JOB_TYPE_OPTIONS = ["Full Time", "PPO"] as const;
+
+function formatNewsletterSource(source: string): string {
+  if (source === "careers-talent-network") return "Careers — Talent Network";
+  if (source === "footer") return "Footer";
+  return source;
+}
 
 const emptyJob = (): CareersJobData => ({
   id: "",
@@ -120,6 +147,13 @@ export default function AdminDashboard() {
   const [resumeSubmissions, setResumeSubmissions] = useState<ResumeSubmission[]>([]);
   const [jobApplications, setJobApplications] = useState<JobApplication[]>([]);
   const [careersJobs, setCareersJobs] = useState<CareersJobData[]>([]);
+  const [newsletterSubscribers, setNewsletterSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [newsletterCampaigns, setNewsletterCampaigns] = useState<NewsletterCampaign[]>([]);
+  const [newsletterSubject, setNewsletterSubject] = useState("");
+  const [newsletterBody, setNewsletterBody] = useState("");
+  const [newsletterSending, setNewsletterSending] = useState(false);
+  const [newsletterSendMessage, setNewsletterSendMessage] = useState("");
+  const [newsletterSendError, setNewsletterSendError] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<ContactSubmission | null>(null);
   const [selectedResume, setSelectedResume] = useState<ResumeSubmission | null>(null);
   const [selectedApplication, setSelectedApplication] = useState<JobApplication | null>(null);
@@ -203,6 +237,28 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  const fetchNewsletterSubscribers = useCallback(async () => {
+    try {
+      const res = await adminFetch("/api/newsletter/subscribers");
+      if (res.ok) setNewsletterSubscribers(await res.json());
+    } catch {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch newsletter subscribers");
+      }
+    }
+  }, []);
+
+  const fetchNewsletterCampaigns = useCallback(async () => {
+    try {
+      const res = await adminFetch("/api/newsletter/campaigns");
+      if (res.ok) setNewsletterCampaigns(await res.json());
+    } catch {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Failed to fetch newsletter campaigns");
+      }
+    }
+  }, []);
+
   const fetchAll = useCallback(async () => {
     try {
       const contentRes = await adminFetch("/api/content");
@@ -218,8 +274,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     adminFetch("/api/auth/verify", { method: "POST" })
-      .then((res) => { if (!res.ok) throw new Error(); return fetchAll(); })
-      .catch(() => { router.push("/admin/login"); });
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return fetchAll();
+      })
+      .catch(() => {
+        router.replace(`/admin/login?redirect=${encodeURIComponent("/admin")}`);
+      });
   }, [router, fetchAll]);
 
   useEffect(() => {
@@ -246,6 +307,19 @@ export default function AdminDashboard() {
     }
   }, [activeSection, fetchCareersJobs]);
 
+  useEffect(() => {
+    if (activeSection === "newsletter-subscribers") {
+      fetchNewsletterSubscribers();
+    }
+  }, [activeSection, fetchNewsletterSubscribers]);
+
+  useEffect(() => {
+    if (activeSection === "newsletter-send") {
+      fetchNewsletterSubscribers();
+      fetchNewsletterCampaigns();
+    }
+  }, [activeSection, fetchNewsletterSubscribers, fetchNewsletterCampaigns]);
+
   const markSubmissionRead = async (id: string) => {
     const res = await adminFetch(`/api/contact/${id}/read`, {
       method: "PATCH",
@@ -254,6 +328,71 @@ export default function AdminDashboard() {
       const updated = await res.json();
       setContactSubmissions((prev) => prev.map((item) => (item.id === id ? updated : item)));
       setSelectedSubmission(updated);
+    }
+  };
+
+  const removeNewsletterSubscriber = async (id: string) => {
+    if (!window.confirm("Remove this subscriber from the list?")) return;
+
+    const res = await adminFetch(`/api/newsletter/subscribers/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      setNewsletterSubscribers((prev) => prev.filter((item) => item.id !== id));
+    } else {
+      alert("Failed to remove subscriber.");
+    }
+  };
+
+  const sendNewsletter = async () => {
+    if (!newsletterSubject.trim() || !newsletterBody.trim()) {
+      setNewsletterSendError("Subject and message are required.");
+      return;
+    }
+
+    const activeCount = newsletterSubscribers.filter((item) => item.status === "active").length;
+    if (activeCount === 0) {
+      setNewsletterSendError("There are no active subscribers to send to.");
+      return;
+    }
+
+    if (
+      !window.confirm(
+        `Send this newsletter to ${activeCount} active subscriber${activeCount === 1 ? "" : "s"}?`
+      )
+    ) {
+      return;
+    }
+
+    setNewsletterSending(true);
+    setNewsletterSendError("");
+    setNewsletterSendMessage("");
+
+    try {
+      const res = await adminFetch("/api/newsletter/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          subject: newsletterSubject.trim(),
+          body: newsletterBody.trim(),
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to send newsletter.");
+      }
+
+      setNewsletterSendMessage(data.message || "Newsletter sent.");
+      setNewsletterSubject("");
+      setNewsletterBody("");
+      await fetchNewsletterCampaigns();
+    } catch (err) {
+      setNewsletterSendError(err instanceof Error ? err.message : "Failed to send newsletter.");
+    } finally {
+      setNewsletterSending(false);
     }
   };
 
@@ -421,7 +560,8 @@ export default function AdminDashboard() {
 
   const handleLogout = async () => {
     await adminFetch("/api/auth/logout", { method: "POST" });
-    router.push("/admin/login");
+    router.replace("/admin/login");
+    router.refresh();
   };
 
   /* ── Field helpers ── */
@@ -3645,6 +3785,174 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const activeNewsletterCount = newsletterSubscribers.filter((item) => item.status === "active").length;
+
+  const renderNewsletterSubscribers = () => (
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-[#1a1a1a]">Newsletter Subscribers</h2>
+          <p className="mt-1 text-sm text-gray-500">
+            {activeNewsletterCount} active · {newsletterSubscribers.length} total
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={fetchNewsletterSubscribers}
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:border-[var(--primary-orange)] hover:text-[var(--primary-orange)]"
+        >
+          Refresh
+        </button>
+      </div>
+
+      {newsletterSubscribers.length === 0 ? (
+        <div className="rounded-2xl bg-white p-10 text-center text-gray-400 shadow-sm">
+          No subscribers yet. They will appear here when users sign up from the footer.
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b border-gray-100 bg-gray-50 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                <tr>
+                  <th className="px-6 py-4">Email</th>
+                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Subscribed</th>
+                  <th className="px-6 py-4">Source</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {newsletterSubscribers.map((item) => (
+                  <tr key={item.id} className="border-b border-gray-50 last:border-b-0">
+                    <td className="px-6 py-4 font-medium text-[#1a1a1a]">{item.email}</td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                          item.status === "active"
+                            ? "bg-green-50 text-green-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">
+                      {new Date(item.subscribedAt).toLocaleString()}
+                    </td>
+                    <td className="px-6 py-4 text-gray-500">{formatNewsletterSource(item.source)}</td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        type="button"
+                        onClick={() => removeNewsletterSubscriber(item.id)}
+                        className="text-sm font-medium text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderNewsletterSend = () => (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="text-2xl font-bold text-[#1a1a1a]">Send Newsletter</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          Compose and send to {activeNewsletterCount} active subscriber{activeNewsletterCount === 1 ? "" : "s"}.
+        </p>
+      </div>
+
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Email sending requires a Resend API key. Until your domain is verified, only test emails may work.
+        Subscribers are still collected without email sending configured.
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-gray-700">Subject</label>
+            <input
+              type="text"
+              value={newsletterSubject}
+              onChange={(e) => setNewsletterSubject(e.target.value)}
+              placeholder="Newsletter subject line"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[var(--primary-orange)]"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-semibold text-gray-700">Message</label>
+            <textarea
+              value={newsletterBody}
+              onChange={(e) => setNewsletterBody(e.target.value)}
+              rows={12}
+              placeholder="Write your newsletter message here..."
+              className="w-full resize-y rounded-lg border border-gray-200 px-4 py-3 text-sm outline-none focus:border-[var(--primary-orange)]"
+            />
+          </div>
+
+          {newsletterSendError ? (
+            <p className="text-sm text-red-600">{newsletterSendError}</p>
+          ) : null}
+          {newsletterSendMessage ? (
+            <p className="text-sm text-green-600">{newsletterSendMessage}</p>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={sendNewsletter}
+            disabled={newsletterSending || activeNewsletterCount === 0}
+            className="rounded-xl bg-[var(--primary-orange)] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#b8451a] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {newsletterSending
+              ? "Sending…"
+              : `Send to ${activeNewsletterCount} subscriber${activeNewsletterCount === 1 ? "" : "s"}`}
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-gray-700">Send History</h3>
+            <button
+              type="button"
+              onClick={fetchNewsletterCampaigns}
+              className="text-sm font-medium text-gray-500 hover:text-[var(--primary-orange)]"
+            >
+              Refresh
+            </button>
+          </div>
+
+          {newsletterCampaigns.length === 0 ? (
+            <p className="py-8 text-center text-sm text-gray-400">No newsletters sent yet.</p>
+          ) : (
+            <div className="flex max-h-[520px] flex-col gap-3 overflow-y-auto">
+              {newsletterCampaigns.map((campaign) => (
+                <div key={campaign.id} className="rounded-xl border border-gray-100 p-4">
+                  <p className="font-semibold text-[#1a1a1a]">{campaign.subject}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-gray-500">{campaign.bodyPreview}</p>
+                  <p className="mt-3 text-xs text-gray-400">
+                    {new Date(campaign.createdAt).toLocaleString()} · Sent {campaign.sentCount}/
+                    {campaign.recipientCount}
+                    {campaign.failedCount > 0 ? ` · ${campaign.failedCount} failed` : ""}
+                  </p>
+                  {campaign.note ? (
+                    <p className="mt-2 text-xs text-amber-700">{campaign.note}</p>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderFooter = () => (
     <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-bold text-[#1a1a1a]">Footer</h2>
@@ -3727,6 +4035,8 @@ export default function AdminDashboard() {
     if (activeSection === "careers-resumes") return renderResumeSubmissions();
     if (activeSection === "careers-applications") return renderJobApplications();
     if (activeSection === "footer") return renderFooter();
+    if (activeSection === "newsletter-subscribers") return renderNewsletterSubscribers();
+    if (activeSection === "newsletter-send") return renderNewsletterSend();
     return null;
   };
 
@@ -3803,7 +4113,10 @@ export default function AdminDashboard() {
           <h1 className="text-lg font-semibold text-[#1a1a1a]">Content Management</h1>
           <div className="flex items-center gap-3">
             {saved && <span className="text-sm font-medium text-green-600">Changes saved ✓</span>}
-            {activeSection !== "dashboard" && activeSection !== "contact-submissions" && (
+            {activeSection !== "dashboard" &&
+              activeSection !== "contact-submissions" &&
+              activeSection !== "newsletter-subscribers" &&
+              activeSection !== "newsletter-send" && (
               <button onClick={handleSave} disabled={saving} className="rounded-xl bg-[var(--primary-orange)] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#b8451a] disabled:opacity-50">
                 {saving ? "Saving…" : "Save Changes"}
               </button>

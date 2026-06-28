@@ -14,6 +14,7 @@ import SubmitResumeModal from "./SubmitResumeModal";
 import { TextAnimate } from "@/registry/magicui/text-animate";
 
 import { API_URL } from "@/app/lib/apiUrl";
+import { subscribeToNewsletter } from "@/app/lib/newsletterSubscribe";
 const categories = JOB_CATEGORIES;
 
 const entryEase = [0.25, 0.1, 0.25, 1] as const;
@@ -81,6 +82,9 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
   const [jobs, setJobs] = useState<CareersJob[]>(initialJobs);
   const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]["id"]>("all");
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [subscribeError, setSubscribeError] = useState("");
   const [resumeModalOpen, setResumeModalOpen] = useState(false);
   const [applyModalOpen, setApplyModalOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<CareersJob | null>(null);
@@ -103,6 +107,24 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
   const openApplyModal = (job: CareersJob) => {
     setSelectedJob(job);
     setApplyModalOpen(true);
+  };
+
+  const handleTalentNetworkSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubscribeError("");
+    setFeedback("");
+
+    try {
+      const message = await subscribeToNewsletter(email, "careers-talent-network");
+      setFeedback(message);
+      setEmail("");
+      setTimeout(() => setFeedback(""), 4000);
+    } catch (err) {
+      setSubscribeError(err instanceof Error ? err.message : "Failed to subscribe.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -269,29 +291,43 @@ export default function CurrentOpenings({ initialJobs = [], sidebarContent }: Cu
               <p className="mt-3 font-century text-[15px] leading-relaxed text-[#4a4a4a]">
                 {sidebar.networkDescription}
               </p>
-              <div className="mt-5 flex gap-2">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 rounded-md border border-[#ddd] px-4 py-2.5 font-century text-[15px] outline-none focus:border-[#0b1f4a]"
-                />
-                <button className="flex items-center justify-center rounded-md bg-[#b8451a] px-4 py-2.5 text-white transition-colors hover:bg-[#a8871f]">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+              <form onSubmit={handleTalentNetworkSubscribe} className="mt-5">
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                    className="flex-1 rounded-md border border-[#ddd] px-4 py-2.5 font-century text-[15px] outline-none focus:border-[#0b1f4a] disabled:opacity-60"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    aria-label="Join talent network"
+                    className="flex items-center justify-center rounded-md bg-[#b8451a] px-4 py-2.5 text-white transition-colors hover:bg-[#a8871f] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+                {subscribeError ? (
+                  <p className="mt-2 font-century text-[13px] text-red-600">{subscribeError}</p>
+                ) : feedback ? (
+                  <p className="mt-2 font-century text-[13px] text-green-700">{feedback}</p>
+                ) : null}
+              </form>
             </motion.div>
           </div>
         </div>

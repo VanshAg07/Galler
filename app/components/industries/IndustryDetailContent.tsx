@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
+import { motion } from "framer-motion";
 import { resolveUploadSrc } from "@/app/lib/resolveUploadSrc";
 import {
   getProductGallery,
@@ -10,6 +11,29 @@ import {
   type IndustryProduct,
 } from "@/app/lib/industries-types";
 import { downloadUploadedFile } from "@/app/lib/downloadFile";
+import { TextAnimate } from "@/registry/magicui/text-animate";
+
+const entryEase = [0.25, 0.1, 0.25, 1] as const;
+const viewport = { once: true, amount: 0.25 };
+
+function DownloadIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M12 3v12" />
+      <path d="M7 10l5 5 5-5" />
+      <path d="M5 21h14" />
+    </svg>
+  );
+}
 
 function CornerBracketBox({ children }: { children: ReactNode }) {
   return (
@@ -27,24 +51,32 @@ function GalleryThumb({
   item,
   active,
   onClick,
+  delay = 0,
 }: {
   item: IndustryGalleryItem;
   active: boolean;
   onClick: () => void;
+  delay?: number;
 }) {
   const src = item.src ? resolveUploadSrc(item.src) : "";
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
-      className="relative aspect-[4/3] min-w-0 flex-1 overflow-hidden bg-white"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={viewport}
+      transition={{ duration: 0.5, ease: entryEase, delay }}
+      className={`relative aspect-[4/3] min-w-0 flex-1 overflow-hidden bg-white ${
+        active ? "ring-2 ring-[#0b1f4a]" : ""
+      }`}
     >
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={item.alt || ""} className="h-full w-full object-cover" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center bg-gray-100 text-[10px] text-gray-400">
+        <div className="flex h-full w-full items-center justify-center bg-gray-100 font-century text-[13px] text-gray-400">
           No image
         </div>
       )}
@@ -57,7 +89,7 @@ function GalleryThumb({
           </span>
         </span>
       ) : null}
-    </button>
+    </motion.button>
   );
 }
 
@@ -112,158 +144,242 @@ export default function IndustryDetailContent({
     <section className="bg-white pt-28 pb-10 sm:pt-32 sm:pb-14 md:pb-16">
       <div className="mx-auto max-w-7xl px-6">
         {backLink ? (
-          <Link
-            href={backLink.href}
-            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-[#0b1f4a]"
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.55, ease: entryEase }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-            {backLink.label}
-          </Link>
+            <Link
+              href={backLink.href}
+              className="mb-6 inline-flex items-center gap-2 font-century text-[15px] font-medium text-gray-500 transition-colors hover:text-[#0b1f4a]"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+              {backLink.label}
+            </Link>
+          </motion.div>
         ) : null}
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-        {/* Left — gallery */}
-        <div>
-          <div
-            className={`relative overflow-hidden bg-[#f7f7f7] ${zoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
-            onClick={() => setZoomed((prev) => !prev)}
+          {/* Left — gallery */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6, ease: entryEase, delay: 0.08 }}
           >
-            {activeSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={activeSrc}
-                alt={activeItem?.alt || product.name}
-                className={`aspect-[4/3] w-full object-contain transition-transform duration-300 ${
-                  zoomed ? "scale-150" : "scale-100"
-                }`}
-              />
-            ) : (
-              <div className="flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-sm text-gray-400">
-                No image uploaded
-              </div>
-            )}
-
-            <button
-              type="button"
-              aria-label="Toggle zoom"
-              onClick={(e) => {
-                e.stopPropagation();
-                setZoomed((prev) => !prev);
-              }}
-              className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#0b1f4a] shadow-sm"
+            <motion.div
+              className={`relative overflow-hidden bg-[#f7f7f7] ${zoomed ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+              onClick={() => setZoomed((prev) => !prev)}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.12 }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
-                <circle cx="11" cy="11" r="7" />
-                <path d="M21 21l-4.35-4.35" />
-                <path d="M11 8v6M8 11h6" />
-              </svg>
-            </button>
-          </div>
+              {activeSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={activeSrc}
+                  alt={activeItem?.alt || product.name}
+                  className={`aspect-[4/3] w-full object-contain transition-transform duration-300 ${
+                    zoomed ? "scale-150" : "scale-100"
+                  }`}
+                />
+              ) : (
+                <div className="flex aspect-[4/3] w-full items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 font-century text-[15px] text-gray-400">
+                  No image uploaded
+                </div>
+              )}
 
-          {gallery.length > 0 ? (
-            <div className="mt-4 flex items-center gap-2">
-              <button
+              <motion.button
                 type="button"
-                aria-label="Previous thumbnails"
-                disabled={thumbStart === 0}
-                onClick={() => setThumbStart((prev) => Math.max(0, prev - 1))}
-                className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-[#0b1f4a] disabled:opacity-30"
+                aria-label="Toggle zoom"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setZoomed((prev) => !prev);
+                }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={viewport}
+                transition={{ duration: 0.45, ease: entryEase, delay: 0.2 }}
+                className="absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#0b1f4a] shadow-sm"
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.35-4.35" />
+                  <path d="M11 8v6M8 11h6" />
                 </svg>
-              </button>
+              </motion.button>
+            </motion.div>
 
-              <div className="flex min-w-0 flex-1 gap-2">
-                {gallery.slice(thumbStart, thumbStart + visibleThumbCount).map((item, offset) => {
-                  const index = thumbStart + offset;
-                  return (
-                    <GalleryThumb
-                      key={item.id}
-                      item={item}
-                      active={index === activeIndex}
-                      onClick={() => selectImage(index)}
-                    />
-                  );
-                })}
-              </div>
-
-              <button
-                type="button"
-                aria-label="Next thumbnails"
-                disabled={thumbStart >= maxThumbStart}
-                onClick={() => setThumbStart((prev) => Math.min(maxThumbStart, prev + 1))}
-                className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-[#0b1f4a] disabled:opacity-30"
+            {gallery.length > 0 ? (
+              <motion.div
+                className="mt-4 flex items-center gap-2"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewport}
+                transition={{ duration: 0.55, ease: entryEase, delay: 0.18 }}
               >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </button>
-            </div>
-          ) : null}
-        </div>
+                <button
+                  type="button"
+                  aria-label="Previous thumbnails"
+                  disabled={thumbStart === 0}
+                  onClick={() => setThumbStart((prev) => Math.max(0, prev - 1))}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-[#0b1f4a] disabled:opacity-30"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 18l-6-6 6-6" />
+                  </svg>
+                </button>
 
-        {/* Right — content */}
-        <div className="flex flex-col">
-          <h1 className="font-serif text-3xl tracking-[0.08em] text-[#0b1f4a] sm:text-4xl md:text-[2.5rem]">
-            {product.name}
-          </h1>
-            <p className="text-sm leading-7 text-[#333] sm:text-[0.95rem] sm:leading-8">
+                <div className="flex min-w-0 flex-1 gap-2">
+                  {gallery.slice(thumbStart, thumbStart + visibleThumbCount).map((item, offset) => {
+                    const index = thumbStart + offset;
+                    return (
+                      <GalleryThumb
+                        key={item.id}
+                        item={item}
+                        active={index === activeIndex}
+                        onClick={() => selectImage(index)}
+                        delay={0.22 + offset * 0.06}
+                      />
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Next thumbnails"
+                  disabled={thumbStart >= maxThumbStart}
+                  onClick={() => setThumbStart((prev) => Math.min(maxThumbStart, prev + 1))}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-[#0b1f4a] disabled:opacity-30"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 18l6-6-6-6" />
+                  </svg>
+                </button>
+              </motion.div>
+            ) : null}
+          </motion.div>
+
+          {/* Right — content */}
+          <div className="flex flex-col">
+            <TextAnimate
+              as="h1"
+              animation="slideRight"
+              by="character"
+              once
+              duration={0.9}
+              className="font-cinzel text-[27px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[40px]"
+            >
+              {product.name}
+            </TextAnimate>
+
+            <motion.p
+              className="mt-4 font-century text-[15px] leading-relaxed text-[#4a4a4a]"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={viewport}
+              transition={{ duration: 0.6, ease: entryEase, delay: 0.1 }}
+            >
               {product.description ||
                 "Add a basic description for this product from the admin panel."}
-            </p>
+            </motion.p>
 
-          {features.length > 0 ? (
-            <div className="mt-8 sm:mt-10">
-              <h2 className="text-sm font-bold tracking-[0.08em] text-[#0b1f4a] uppercase sm:text-base">
-                Key Features
-              </h2>
-
-              <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
-                {featureColumns.map((column, columnIndex) => (
-                  <ul key={columnIndex} className="space-y-2">
-                    {column.map((feature) => (
-                      <li
-                        key={feature}
-                        className="flex gap-2 text-sm leading-relaxed text-[#333] sm:text-[0.95rem]"
-                      >
-                        <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#0b1f4a]" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {downloadButtons.brochure || downloadButtons.model3d ? (
-            <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
-              {downloadButtons.brochure ? (
-                <button
-                  type="button"
-                  onClick={() => handleDownload("brochure")}
-                  disabled={downloading === "brochure"}
-                  className="inline-flex min-w-[180px] items-center justify-center rounded-xl bg-[#b8451a] px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-[#d4531a] disabled:opacity-60"
+            {features.length > 0 ? (
+              <motion.div
+                className="mt-8 sm:mt-10"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewport}
+                transition={{ duration: 0.6, ease: entryEase, delay: 0.16 }}
+              >
+                <TextAnimate
+                  as="h2"
+                  animation="slideRight"
+                  by="character"
+                  once
+                  duration={0.8}
+                  className="font-cinzel text-[20px] font-normal leading-[1.08] tracking-tight text-[#0b1f4a] md:text-[30px]"
                 >
-                  {downloading === "brochure" ? "Downloading…" : "Download Brochure"}
-                </button>
-              ) : null}
-              {downloadButtons.model3d ? (
-                <button
-                  type="button"
-                  onClick={() => handleDownload("model3d")}
-                  disabled={downloading === "model3d"}
-                  className="inline-flex min-w-[180px] items-center justify-center rounded-full border-2 border-[#0b1f4a] px-6 py-3 text-sm font-medium tracking-wide text-[#0b1f4a] transition-colors hover:bg-[#0b1f4a] hover:text-white disabled:opacity-60"
-                >
-                  {downloading === "model3d" ? "Downloading…" : "3D Model"}
-                </button>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+                  Key Features
+                </TextAnimate>
+
+                <motion.div
+                  className="mt-2 h-0.5 w-12 bg-[#b8451a]"
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  whileInView={{ opacity: 1, scaleX: 1 }}
+                  viewport={viewport}
+                  transition={{ duration: 0.45, ease: entryEase, delay: 0.22 }}
+                />
+
+                <div className="mt-5 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
+                  {featureColumns.map((column, columnIndex) => (
+                    <ul key={columnIndex} className="space-y-2">
+                      {column.map((feature, featureIndex) => {
+                        const flatIndex = columnIndex + featureIndex * 2;
+                        return (
+                          <motion.li
+                            key={feature}
+                            className="flex gap-2 font-century text-[15px] leading-relaxed text-[#4a4a4a]"
+                            initial={{ opacity: 0, x: columnIndex === 0 ? -30 : 30 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={viewport}
+                            transition={{
+                              duration: 0.5,
+                              ease: entryEase,
+                              delay: 0.24 + flatIndex * 0.06,
+                            }}
+                          >
+                            <span className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-[#0b1f4a]" />
+                            <span>{feature}</span>
+                          </motion.li>
+                        );
+                      })}
+                    </ul>
+                  ))}
+                </div>
+              </motion.div>
+            ) : null}
+
+            {downloadButtons.brochure || downloadButtons.model3d ? (
+              <motion.div
+                className="mt-8 flex flex-wrap gap-3 sm:mt-10"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={viewport}
+                transition={{ duration: 0.55, ease: entryEase, delay: 0.28 }}
+              >
+                {downloadButtons.brochure ? (
+                  <motion.button
+                    type="button"
+                    onClick={() => handleDownload("brochure")}
+                    disabled={downloading === "brochure"}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex min-w-[180px] items-center justify-center gap-2 rounded-xl bg-[#b8451a] px-6 py-3 font-century text-[15px] font-semibold tracking-wide text-white transition-colors hover:bg-[#d4531a] disabled:opacity-60"
+                  >
+                    <DownloadIcon />
+                    {downloading === "brochure" ? "Downloading…" : "Download Brochure"}
+                  </motion.button>
+                ) : null}
+                {downloadButtons.model3d ? (
+                  <motion.button
+                    type="button"
+                    onClick={() => handleDownload("model3d")}
+                    disabled={downloading === "model3d"}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-flex min-w-[180px] items-center justify-center gap-2 rounded-xl bg-[#b8451a] px-6 py-3 font-century text-[15px] font-semibold tracking-wide text-white transition-colors hover:bg-[#d4531a] disabled:opacity-60"
+                  >
+                    <DownloadIcon />
+                    {downloading === "model3d" ? "Downloading…" : "3D Model"}
+                  </motion.button>
+                ) : null}
+              </motion.div>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

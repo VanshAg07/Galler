@@ -138,8 +138,6 @@ export default function AboutAchievementsContact({
             >
               {formHeading}
             </motion.h3>
-            <h1>Branch 1: Fetures/ understanding-onboarding</h1>
-            <h2>Branch 2: Test cases creation</h2>
 
             <form onSubmit={handleSubmit} className="mt-10 space-y-8">
               {[

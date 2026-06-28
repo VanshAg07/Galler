@@ -13,6 +13,7 @@ const contentRoutes = require('./routes/content');
 const uploadRoutes = require('./routes/upload');
 const contactRoutes = require('./routes/contact');
 const careersRoutes = require('./routes/careers');
+const newsletterRoutes = require('./routes/newsletter');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -78,6 +79,16 @@ const contactLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const newsletterSubscribeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    message: 'Too many subscription attempts. Please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const uploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 5, // Max 5 uploads per hour
@@ -92,6 +103,7 @@ const uploadLimiter = rateLimit({
 app.use('/api/', apiLimiter); // General protection for all API routes
 app.use('/api/auth/login', authLimiter); // Strict protection for login
 app.use('/api/contact', contactLimiter); // Contact form protection
+app.use('/api/newsletter/subscribe', newsletterSubscribeLimiter);
 app.use('/api/careers/resume', uploadLimiter); // Resume upload protection
 app.use('/api/careers/apply', uploadLimiter); // Job application protection
 
@@ -108,6 +120,7 @@ app.use('/api/content', contentRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/careers', careersRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

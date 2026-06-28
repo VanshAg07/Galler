@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import type { SiteContent } from "@/app/lib/getContent";
+import { subscribeToNewsletter } from "@/app/lib/newsletterSubscribe";
 import { TextAnimate } from "@/registry/magicui/text-animate";
 
 type Props = { content?: SiteContent["footer"] };
@@ -144,6 +145,28 @@ function normalizeSocialUrl(url?: string): string | null {
 
 export default function Footer({ content }: Props) {
   const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError("");
+    setFeedback("");
+
+    try {
+      const message = await subscribeToNewsletter(email, "footer");
+      setFeedback(message);
+      setEmail("");
+      setTimeout(() => setFeedback(""), 4000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to subscribe.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const c: SiteContent["footer"] = {
     newsletter: { ...DEFAULTS.newsletter, ...content?.newsletter },
     contact: { ...DEFAULTS.contact, ...content?.contact },
@@ -162,23 +185,34 @@ export default function Footer({ content }: Props) {
               <p className="font-century text-[14px] leading-relaxed text-gray-400">{c.newsletter.description}</p>
             </FooterPoint>
             <FooterPoint delay={0.16} className="w-full max-w-sm md:max-w-none">
-              <div className="flex w-full overflow-hidden rounded-full border border-gray-600">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder-gray-500 outline-none"
-                />
-                <button
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary transition-colors hover:bg-[#b8451a]"
-                  aria-label="Subscribe"
-                >
-                  <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-                    <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </div>
+              <form onSubmit={handleSubscribe} className="w-full">
+                <div className="flex w-full overflow-hidden rounded-full border border-gray-600">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={submitting}
+                    className="flex-1 bg-transparent px-4 py-3 text-sm text-white placeholder-gray-500 outline-none disabled:opacity-60"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary transition-colors hover:bg-[#b8451a] disabled:cursor-not-allowed disabled:opacity-60"
+                    aria-label="Subscribe"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                      <path d="M1 7h12m0 0L8 2m5 5L8 12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+                {error ? (
+                  <p className="mt-2 text-left font-century text-[13px] text-red-400">{error}</p>
+                ) : feedback ? (
+                  <p className="mt-2 text-left font-century text-[13px] text-green-400">{feedback}</p>
+                ) : null}
+              </form>
             </FooterPoint>
           </div>
 

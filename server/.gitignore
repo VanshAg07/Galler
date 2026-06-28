@@ -5,5 +5,7 @@ uploads/*
 data/contact-submissions.json
 data/resume-submissions.json
 data/job-applications.json
+data/newsletter-subscribers.json
+data/newsletter-campaigns.json
 private/resumes/*
 !private/resumes/.gitkeep
