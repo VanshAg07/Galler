@@ -5,7 +5,7 @@ import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 import AboutHero from "../components/about/AboutHero";
 import AboutSectionTwo from "../components/about/AboutSectionTwo";
-import AboutJourney from "../components/about/AboutJourney";
+import JourneyCarousel from "../components/about/JourneyCarousel";
 import AboutDimensions from "../components/about/AboutDimensions";
 import AboutTeamSection from "../components/about/AboutTeamSection";
 import AboutAchievementsContact from "../components/about/AboutAchievementsContact";
@@ -53,7 +53,7 @@ export default async function AboutPage() {
           paragraph1={aboutPage?.introSection?.paragraph1}
           paragraph2={aboutPage?.introSection?.paragraph2}
         />
-        <AboutJourney
+        <JourneyCarousel
           heading={aboutPage?.journeyTimeline?.heading}
           milestones={aboutPage?.journeyTimeline?.milestones}
           backgroundImage={aboutPage?.journeyTimeline?.backgroundImage}

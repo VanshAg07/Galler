@@ -93,6 +93,7 @@ export interface SiteContent {
         id: string;
         name: string;
         photo: string;
+        title?: string;
         linkedin: string;
         instagram: string;
         description: string;

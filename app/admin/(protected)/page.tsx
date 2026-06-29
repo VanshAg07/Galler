@@ -9,6 +9,7 @@ import {
   MARQUEE_RECOMMENDED_WIDTH,
   MARQUEE_SLOT_CLASS,
   MARQUEE_SLOT_DISPLAY_HEIGHT,
+  MARQUEE_SLOT_DISPLAY_WIDTH,
 } from "@/app/lib/marquee-config";
 import { enrichCareersJob } from "@/app/lib/careers-data";
 import { adminFetch } from "@/app/lib/adminApi";
@@ -874,10 +875,10 @@ export default function AdminDashboard() {
           <p className="font-semibold">Recommended logo size for a uniform look</p>
           <ul className="mt-2 list-inside list-disc space-y-1 text-amber-800">
             <li>
-              <strong>{MARQUEE_RECOMMENDED_WIDTH} × {MARQUEE_RECOMMENDED_HEIGHT} px</strong> square or landscape (PNG or SVG, transparent background)
+              <strong>{MARQUEE_RECOMMENDED_WIDTH} × {MARQUEE_RECOMMENDED_HEIGHT} px</strong> square (PNG or SVG, transparent background)
             </li>
             <li>
-              On-site display height: <strong>{MARQUEE_SLOT_DISPLAY_HEIGHT} px</strong> — crop tight around the logo, avoid extra whitespace in the file
+              On-site display size: <strong>{MARQUEE_SLOT_DISPLAY_WIDTH} × {MARQUEE_SLOT_DISPLAY_HEIGHT} px</strong> — crop tight around the logo, avoid extra whitespace in the file
             </li>
             <li>
               Maximum <strong>{MARQUEE_MAX_LOGOS} logos</strong> in{" "}
@@ -2132,6 +2133,7 @@ export default function AdminDashboard() {
       id: string;
       name: string;
       photo: string;
+      title: string;
       linkedin: string;
       instagram: string;
       description: string;
@@ -2160,7 +2162,7 @@ export default function AdminDashboard() {
       <div className="flex flex-col gap-6">
         <h2 className="text-2xl font-bold text-[#1a1a1a]">About Page — Our Team</h2>
         <p className="text-sm text-gray-500">
-          Add team members with a photo, name, social links, and description. Three members appear per row on the about page.
+          Add team members with a photo, name, title, social links, and description. Three members appear per row on the about page.
         </p>
         <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
           {renderField("aboutPage", "team.heading", "Section Heading", false, ["team", "heading"])}
@@ -2176,6 +2178,7 @@ export default function AdminDashboard() {
                     id: String(Date.now()),
                     name: "Team Member",
                     photo: "",
+                    title: "",
                     linkedin: "",
                     instagram: "",
                     description: "",
@@ -2277,6 +2280,17 @@ export default function AdminDashboard() {
                   </div>
                   <input
                     type="text"
+                    placeholder="Job title (e.g. Full Stack Developer)"
+                    value={member.title ?? ""}
+                    onChange={(e) => {
+                      const next = [...members];
+                      next[i] = { ...next[i], title: e.target.value };
+                      updateMembers(next);
+                    }}
+                    className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
+                  />
+                  <input
+                    type="text"
                     placeholder="LinkedIn URL"
                     value={member.linkedin}
                     onChange={(e) => {
@@ -2298,7 +2312,7 @@ export default function AdminDashboard() {
                     className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
                   />
                   <textarea
-                    placeholder="Description"
+                    placeholder="Description (bio or additional details)"
                     value={member.description}
                     onChange={(e) => {
                       const next = [...members];

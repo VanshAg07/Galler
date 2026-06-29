@@ -77,7 +77,7 @@ export default function AboutAchievementsContact({
               return (
                 <motion.div
                   key={stat.label}
-                  className="relative min-h-[180px] overflow-hidden rounded-sm px-6 py-10 text-center text-white shadow-md"
+                  className="relative flex min-h-[180px] items-center justify-center overflow-hidden rounded-sm shadow-md"
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={viewport}
@@ -94,7 +94,7 @@ export default function AboutAchievementsContact({
                     className="absolute inset-0 h-full w-full object-cover object-center"
                   />
                   <div className="pointer-events-none absolute inset-0 bg-black/55" />
-                  <div className="relative">
+                  <div className="relative z-10 px-6 py-10 text-center text-white">
                     <CountUpNumber
                       value={stat.value}
                       className="font-cinzel text-[30px] font-normal leading-none text-white"

@@ -6,19 +6,20 @@ export type MarqueeLogo = {
   alt: string;
 };
 
-/** Every logo is rendered inside a fixed-height slot; width follows aspect ratio. */
+/** Every logo is rendered inside a fixed 120×120 px slot. */
 export const MARQUEE_SLOT_CLASS =
-  "relative flex h-24 shrink-0 items-center sm:h-28 md:h-32 lg:h-36";
+  "relative flex h-[120px] w-[120px] shrink-0 items-center justify-center";
 
-/** On-screen slot height at the largest breakpoint. */
-export const MARQUEE_SLOT_DISPLAY_HEIGHT = 144;
+/** On-screen slot size (px). */
+export const MARQUEE_SLOT_DISPLAY_HEIGHT = 120;
+export const MARQUEE_SLOT_DISPLAY_WIDTH = 120;
 
-/** Recommended logo image dimensions (square or landscape, transparent background). */
-export const MARQUEE_RECOMMENDED_WIDTH = 400;
-export const MARQUEE_RECOMMENDED_HEIGHT = 400;
+/** Recommended logo image dimensions (square, transparent background). */
+export const MARQUEE_RECOMMENDED_WIDTH = 120;
+export const MARQUEE_RECOMMENDED_HEIGHT = 120;
 
 /** Approximate slot width including horizontal margins — used before layout measure. */
-export const MARQUEE_SLOT_WIDTH_ESTIMATE = 200;
+export const MARQUEE_SLOT_WIDTH_ESTIMATE = 168;
 
 /** Maximum logos allowed in the marquee (admin + site). */
 export const MARQUEE_MAX_LOGOS = 18;
@@ -27,14 +28,27 @@ export const MARQUEE_MAX_LOGOS = 18;
 export const MARQUEE_ROW_COUNT = 2;
 export const MARQUEE_LOGOS_PER_ROW = MARQUEE_MAX_LOGOS / MARQUEE_ROW_COUNT;
 
-export const MARQUEE_MIN_DURATION = 20;
-export const MARQUEE_MAX_DURATION = 72;
-export const MARQUEE_SECONDS_PER_LOGO = 2.5;
+export const MARQUEE_MIN_DURATION = 40;
+export const MARQUEE_MAX_DURATION = 120;
+export const MARQUEE_SECONDS_PER_LOGO = 5;
 
+/** Duration from logo count — legacy estimate only; prefer getMarqueeDurationFromShift. */
 export function getMarqueeDuration(logoCount: number): string {
   const seconds = Math.min(
     MARQUEE_MAX_DURATION,
     Math.max(MARQUEE_MIN_DURATION, logoCount * MARQUEE_SECONDS_PER_LOGO)
+  );
+  return `${seconds}s`;
+}
+
+/** Duration from measured track width so every row scrolls at the same px/s. */
+export function getMarqueeDurationFromShift(shiftPx: number): string {
+  if (shiftPx <= 0) return `${MARQUEE_MIN_DURATION}s`;
+
+  const secondsPerPixel = MARQUEE_SECONDS_PER_LOGO / MARQUEE_SLOT_WIDTH_ESTIMATE;
+  const seconds = Math.min(
+    MARQUEE_MAX_DURATION,
+    Math.max(MARQUEE_MIN_DURATION, shiftPx * secondsPerPixel)
   );
   return `${seconds}s`;
 }

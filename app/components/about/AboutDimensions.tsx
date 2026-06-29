@@ -41,7 +41,7 @@ const DEFAULT_CARDS: DimensionCard[] = [
 
 function BlueprintPattern() {
   return (
-    <svg className="absolute inset-0 h-full w-full opacity-[0.35]" aria-hidden>
+    <svg className="absolute inset-0 h-full w-full opacity-[0.25]" aria-hidden>
       <defs>
         <pattern id="blueprint-grid" width="48" height="48" patternUnits="userSpaceOnUse">
           <path d="M48 0H0V48" fill="none" stroke="#7eb8d4" strokeWidth="0.5" />

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MARQUEE_SLOT_CLASS,
   buildMarqueeTrack,
-  getMarqueeDuration,
+  getMarqueeDurationFromShift,
   resolveMarqueeSrc,
   splitMarqueeRows,
   type MarqueeLogo,
@@ -17,7 +17,7 @@ function LogoSlot({ logo }: { logo: MarqueeLogo }) {
       <img
         src={resolveMarqueeSrc(logo.src)}
         alt={logo.alt}
-        className="h-full w-auto max-w-none object-contain object-center"
+        className="h-full w-full object-contain object-center"
         loading="lazy"
         decoding="async"
       />
@@ -41,7 +41,7 @@ function MarqueeRow({
     () => buildMarqueeTrack(logos, viewportWidth),
     [logos, viewportWidth]
   );
-  const duration = getMarqueeDuration(logos.length);
+  const duration = getMarqueeDurationFromShift(shiftPx);
 
   useEffect(() => {
     const updateViewport = () => {
