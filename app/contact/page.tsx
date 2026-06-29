@@ -49,7 +49,10 @@ export default async function ContactPage() {
           email1={contactPage?.email}
           address={contactPage?.address1}
         />
-        <ContactLocations plants={contactPage?.plants} />
+        <ContactLocations 
+          plants={contactPage?.plants}
+          locationMapUrl={contactPage?.locationMapUrl}
+        />
         <ContactDepartments />
       </main>
       <Footer content={content?.footer} />

@@ -125,10 +125,12 @@ export interface SiteContent {
     phone2: string;
     email: string;
     address1: string;
+    locationMapUrl?: string;
     plants?: {
       name: string;
       address: string;
       image?: string;
+      mapUrl?: string;
     }[];
   };
   projectsPage?: {

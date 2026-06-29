@@ -255,6 +255,7 @@
     "phone2": "8852019731",
     "email": "info@gallerindia.com",
     "address1": "Plot No. 620, Sector 8 Rd, Sector 8, IMT Manesar, Gurugram, Haryana 122050, India",
+    "locationMapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3504.0425895735393!2d77.3133869755499!3d28.5684837869862!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390ce446cd69d94b%3A0x8c317ff6e20dc208!2sMicrosoft%20India%20(R%26D)%20Pvt.%20Ltd.%2C!5e0!3m2!1sen!2sin!4v1782724817064!5m2!1sen!2sin\" width=\"600\" height=\"450\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"strict-origin-when-cross-origin",
     "plants": [
       {
         "name": "PLANT 1 – NOIDA",
@@ -270,8 +271,9 @@
         "image": "/uploads/image-1781961293059-121793973.jpeg"
       },
       {
-        "name": "PLANT 4 – BANGALORE",
-        "address": "No. 25, KIADB Industrial Area, Electronics City Phase 2, Bangalore, Karnataka – 560100, India"
+        "name": "PLANT 4 – NEW LOCATION",
+        "address": "Enter plant address",
+        "image": ""
       }
     ]
   },

@@ -606,21 +606,21 @@ export default function AdminDashboard() {
     };
 
     return (
-      <div key={fieldKey} className="flex flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
-        <div className="flex items-center justify-between">
+      <div key={fieldKey} className="flex min-w-0 flex-col gap-2 rounded-xl border border-gray-100 bg-gray-50 p-4">
+        <div className="flex items-center justify-between gap-2">
           <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">{label}</label>
-          <button onClick={() => setEditingField(isEditing ? null : fieldKey)} className="text-xs font-medium text-[var(--primary-orange)] hover:underline">
+          <button onClick={() => setEditingField(isEditing ? null : fieldKey)} className="shrink-0 text-xs font-medium text-[var(--primary-orange)] hover:underline">
             {isEditing ? "Done" : "Edit"}
           </button>
         </div>
         {isEditing ? (
           multiline ? (
-            <textarea value={value} onChange={(e) => handleChange(e.target.value)} rows={3} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]" />
+            <textarea value={value} onChange={(e) => handleChange(e.target.value)} rows={3} className="w-full min-w-0 max-w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm break-all text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]" />
           ) : (
-            <input type="text" value={value} onChange={(e) => handleChange(e.target.value)} className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]" />
+            <input type="text" value={value} onChange={(e) => handleChange(e.target.value)} className="w-full min-w-0 max-w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]" />
           )
         ) : (
-          <p className="text-sm leading-relaxed text-[#1a1a1a]">{value}</p>
+          <p className="text-sm leading-relaxed break-all text-[#1a1a1a]">{value || "—"}</p>
         )}
       </div>
     );
@@ -2738,7 +2738,7 @@ export default function AdminDashboard() {
 
 
   const renderContact = () => {
-    type Plant = { name: string; address: string; image?: string };
+    type Plant = { name: string; address: string; image?: string; mapUrl?: string };
     const plants =
       ((content.contactPage as Record<string, unknown>)?.plants as Plant[]) ?? [];
 
@@ -2761,10 +2761,10 @@ export default function AdminDashboard() {
     const backgroundImage = String((content.contactPage as Record<string, unknown>)?.backgroundImage ?? "");
 
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-6">
         <h2 className="text-2xl font-bold text-[#1a1a1a]">Contact Page</h2>
-        <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-3 rounded-xl border-2 border-dashed border-gray-200 p-6">
+        <div className="flex min-w-0 flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+          <div className="flex min-w-0 flex-col gap-3 rounded-xl border-2 border-dashed border-gray-200 p-6">
             <p className="text-sm font-semibold text-gray-700">Hero Background Image</p>
             <p className="text-xs text-gray-500">
               PNG, JPG, or WebP. Recommended wide landscape image. Uploads save automatically.
@@ -2842,12 +2842,33 @@ export default function AdminDashboard() {
           {renderField("contactPage", "phone2", "Phone 2")}
           {renderField("contactPage", "email", "Email")}
           {renderField("contactPage", "address1", "Corporate Office Address", true)}
+          {renderField("contactPage", "locationMapUrl", "Location Map Embed URL", true)}
+          <div className="min-w-0 rounded-lg border border-amber-300 bg-amber-50 p-4">
+            <p className="mb-2 text-xs leading-relaxed font-medium text-amber-900">
+              ⚠️ <strong>IMPORTANT: You must use the EMBED URL format, not a regular sharing link!</strong>
+            </p>
+            <p className="mb-3 text-xs leading-relaxed text-amber-800">
+              <strong className="text-red-700">❌ WRONG:</strong> <code className="rounded bg-amber-100 px-1 break-all">https://maps.app.goo.gl/...</code> or <code className="rounded bg-amber-100 px-1 break-all">https://goo.gl/maps/...</code>
+              <br />
+              <strong className="text-green-700">✓ CORRECT:</strong> <code className="rounded bg-amber-100 px-1 break-all">https://www.google.com/maps/embed?pb=...</code>
+            </p>
+            <div className="space-y-1 rounded bg-white/50 p-2 text-xs leading-relaxed text-amber-900">
+              <p className="font-semibold">How to get the correct embed URL:</p>
+              <p>1. Open Google Maps on desktop (maps.google.com)</p>
+              <p>2. Search for your location</p>
+              <p>3. Click the <strong>&quot;Share&quot;</strong> button</p>
+              <p>4. Click the <strong>&quot;Embed a map&quot;</strong> tab</p>
+              <p>5. Click <strong>&quot;COPY HTML&quot;</strong></p>
+              <p>6. Paste it somewhere and find the URL inside <code className="bg-amber-100 px-1 rounded">src=&quot;...&quot;</code></p>
+              <p>7. Copy ONLY that URL and paste it here</p>
+            </div>
+          </div>
           <hr className="border-gray-100" />
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-semibold text-gray-700">Our Plants</h3>
               <p className="mt-1 text-xs text-gray-500">
-                Shown in the &quot;Our Plants&quot; section on the contact page.
+                Shown in the &quot;Our Plants&quot; section on the contact page. Add a map link so each plant opens in Google Maps when clicked.
               </p>
             </div>
             <button
@@ -2855,7 +2876,7 @@ export default function AdminDashboard() {
               onClick={() =>
                 updatePlants([
                   ...plants,
-                  { name: "PLANT 5 – NEW LOCATION", address: "Enter plant address", image: "" },
+                  { name: "PLANT 5 – NEW LOCATION", address: "Enter plant address", image: "", mapUrl: "" },
                 ])
               }
               className="rounded-lg bg-[var(--primary-orange)] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#b8451a]"
@@ -2869,7 +2890,7 @@ export default function AdminDashboard() {
             </p>
           ) : (
             plants.map((plant, i) => (
-              <div key={i} className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+              <div key={i} className="flex min-w-0 flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -2880,12 +2901,12 @@ export default function AdminDashboard() {
                       next[i] = { ...next[i], name: e.target.value };
                       updatePlants(next);
                     }}
-                    className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
+                    className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
                   />
                   <button
                     type="button"
                     onClick={() => updatePlants(plants.filter((_, idx) => idx !== i))}
-                    className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
+                    className="shrink-0 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50"
                   >
                     Remove
                   </button>
@@ -2899,8 +2920,27 @@ export default function AdminDashboard() {
                     next[i] = { ...next[i], address: e.target.value };
                     updatePlants(next);
                   }}
-                  className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
+                  className="w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
                 />
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
+                    Map Link
+                  </label>
+                  <textarea
+                    placeholder="https://maps.app.goo.gl/... or https://www.google.com/maps/..."
+                    value={plant.mapUrl ?? ""}
+                    rows={2}
+                    onChange={(e) => {
+                      const next = [...plants];
+                      next[i] = { ...next[i], mapUrl: e.target.value };
+                      updatePlants(next);
+                    }}
+                    className="w-full min-w-0 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm break-all text-[#1a1a1a] outline-none focus:border-[var(--primary-orange)]"
+                  />
+                  <p className="text-xs text-gray-500">
+                    Google Maps share link for this plant. If left empty, the address above is used to open Google Maps.
+                  </p>
+                </div>
                 <div className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white p-3">
                   {plant.image ? (
                     <div className="relative h-16 w-24 shrink-0 overflow-hidden rounded border border-gray-200">
@@ -4100,7 +4140,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen overflow-x-hidden">
       {/* ── Sidebar ── */}
       <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-gray-200 bg-white overflow-y-auto">
         <div className="flex h-16 shrink-0 items-center gap-3 border-b border-gray-100 px-6">
@@ -4167,7 +4207,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* ── Main ── */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-8">
           <h1 className="text-lg font-semibold text-[#1a1a1a]">Content Management</h1>
           <div className="flex items-center gap-3">
@@ -4183,7 +4223,7 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-8 bg-[#f9f9f9]">{renderContent()}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto bg-[#f9f9f9] p-8">{renderContent()}</main>
       </div>
     </div>
   );
