@@ -6,7 +6,6 @@ import {
   buildMarqueeTrack,
   getMarqueeDurationFromShift,
   resolveMarqueeSrc,
-  splitMarqueeRows,
   type MarqueeLogo,
 } from "@/app/lib/marquee-config";
 
@@ -88,8 +87,8 @@ function MarqueeRow({
   );
 }
 
-export default function MarqueeTrack({ logos }: { logos: MarqueeLogo[] }) {
-  const rows = useMemo(() => splitMarqueeRows(logos), [logos]);
+export default function MarqueeTrack({ rows }: { rows: MarqueeLogo[][] }) {
+  if (rows.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8">

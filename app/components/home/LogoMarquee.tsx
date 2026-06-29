@@ -1,5 +1,5 @@
 import type { SiteContent } from "@/app/lib/getContent";
-import { DEFAULT_MARQUEE_LOGOS } from "@/app/lib/marquee-config";
+import { getMarqueeRowsFromContent } from "@/app/lib/marquee-config";
 import homeAboutGif from "@/public/home-about.gif";
 import MarqueeTrack from "./MarqueeTrack";
 import CharacterSlideHeading from "./CharacterSlideHeading";
@@ -19,8 +19,8 @@ function SideGif({ className }: { className?: string }) {
 }
 
 export default function LogoMarquee({ content, heading = "OUR CLIENTS" }: Props) {
-  const logos = content?.logos?.filter((logo) => logo.src) ?? DEFAULT_MARQUEE_LOGOS;
-  if (logos.length === 0) return null;
+  const rows = getMarqueeRowsFromContent(content);
+  if (rows.length === 0) return null;
 
   return (
     <section aria-label="Partner logos" className="relative overflow-hidden bg-[#f6f6f6] py-14 sm:py-16">
@@ -36,7 +36,7 @@ export default function LogoMarquee({ content, heading = "OUR CLIENTS" }: Props)
           title={heading}
           className="mb-10 text-center font-cinzel text-[27px] font-normal leading-[1.08] tracking-tight text-[#000000] sm:mb-12 md:text-[40px]"
         />
-        <MarqueeTrack logos={logos} />
+        <MarqueeTrack rows={rows} />
       </div>
     </section>
   );

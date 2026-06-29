@@ -21,12 +21,52 @@ export const MARQUEE_RECOMMENDED_HEIGHT = 120;
 /** Approximate slot width including horizontal margins — used before layout measure. */
 export const MARQUEE_SLOT_WIDTH_ESTIMATE = 168;
 
-/** Maximum logos allowed in the marquee (admin + site). */
-export const MARQUEE_MAX_LOGOS = 18;
-
-/** Two horizontal rows, nine logos each. */
+/** Maximum logos per row (admin + site). */
 export const MARQUEE_ROW_COUNT = 2;
-export const MARQUEE_LOGOS_PER_ROW = MARQUEE_MAX_LOGOS / MARQUEE_ROW_COUNT;
+export const MARQUEE_LOGOS_PER_ROW = 15;
+export const MARQUEE_MAX_LOGOS = MARQUEE_ROW_COUNT * MARQUEE_LOGOS_PER_ROW;
+
+export type MarqueeContent = {
+  row1?: MarqueeLogo[];
+  row2?: MarqueeLogo[];
+  /** @deprecated legacy flat list — migrated on read */
+  logos?: MarqueeLogo[];
+};
+
+export function normalizeMarqueeAdminState(
+  content?: MarqueeContent | null
+): { row1: MarqueeLogo[]; row2: MarqueeLogo[] } {
+  if (content?.row1 !== undefined || content?.row2 !== undefined) {
+    return {
+      row1: content.row1 ?? [],
+      row2: content.row2 ?? [],
+    };
+  }
+
+  const logos = content?.logos ?? [];
+  return {
+    row1: logos.slice(0, MARQUEE_LOGOS_PER_ROW),
+    row2: logos.slice(MARQUEE_LOGOS_PER_ROW),
+  };
+}
+
+export function getMarqueeRowsFromContent(content?: MarqueeContent | null): MarqueeLogo[][] {
+  const { row1, row2 } = normalizeMarqueeAdminState(content);
+  const rows: MarqueeLogo[][] = [];
+  const activeRow1 = row1.filter((logo) => logo.src);
+  const activeRow2 = row2.filter((logo) => logo.src);
+
+  if (activeRow1.length > 0) rows.push(activeRow1);
+  if (activeRow2.length > 0) rows.push(activeRow2);
+
+  if (rows.length > 0) return rows;
+
+  const fallback = DEFAULT_MARQUEE_LOGOS.filter((logo) => logo.src);
+  if (fallback.length === 0) return [];
+
+  const midpoint = Math.ceil(fallback.length / 2);
+  return [fallback.slice(0, midpoint), fallback.slice(midpoint)].filter((row) => row.length > 0);
+}
 
 export const MARQUEE_MIN_DURATION = 40;
 export const MARQUEE_MAX_DURATION = 120;
@@ -70,20 +110,6 @@ export function buildMarqueeSet(logos: MarqueeLogo[], viewportWidth: number): Ma
 export function buildMarqueeTrack(logos: MarqueeLogo[], viewportWidth: number): MarqueeLogo[] {
   const singleSet = buildMarqueeSet(logos, viewportWidth);
   return [...singleSet, ...singleSet];
-}
-
-export function splitMarqueeRows(logos: MarqueeLogo[]): MarqueeLogo[][] {
-  const rows: MarqueeLogo[][] = [];
-
-  for (let row = 0; row < MARQUEE_ROW_COUNT; row += 1) {
-    const slice = logos.slice(
-      row * MARQUEE_LOGOS_PER_ROW,
-      row * MARQUEE_LOGOS_PER_ROW + MARQUEE_LOGOS_PER_ROW
-    );
-    if (slice.length > 0) rows.push(slice);
-  }
-
-  return rows;
 }
 
 export const DEFAULT_MARQUEE_LOGOS: MarqueeLogo[] = [

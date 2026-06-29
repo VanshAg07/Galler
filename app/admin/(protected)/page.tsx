@@ -4,12 +4,14 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  MARQUEE_MAX_LOGOS,
+  MARQUEE_LOGOS_PER_ROW,
+  MARQUEE_ROW_COUNT,
   MARQUEE_RECOMMENDED_HEIGHT,
   MARQUEE_RECOMMENDED_WIDTH,
   MARQUEE_SLOT_CLASS,
   MARQUEE_SLOT_DISPLAY_HEIGHT,
   MARQUEE_SLOT_DISPLAY_WIDTH,
+  normalizeMarqueeAdminState,
 } from "@/app/lib/marquee-config";
 import { enrichCareersJob } from "@/app/lib/careers-data";
 import { adminFetch } from "@/app/lib/adminApi";
@@ -686,11 +688,11 @@ export default function AdminDashboard() {
 
   const uploadMarqueeLogo = uploadImage;
 
-  const persistMarqueeLogos = async (logos: { id: string; src: string; alt: string }[]) => {
+  const persistMarqueeRows = async (row1: { id: string; src: string; alt: string }[], row2: { id: string; src: string; alt: string }[]) => {
     const res = await adminFetch("/api/content/marquee", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ logos }),
+      body: JSON.stringify({ row1, row2 }),
     });
 
     const data = (await res.json().catch(() => null)) as { message?: string } | null;
@@ -698,7 +700,7 @@ export default function AdminDashboard() {
       throw new Error(data?.message || "Failed to save marquee logos");
     }
 
-    setContent((prev) => ({ ...prev, marquee: { logos } }));
+    setContent((prev) => ({ ...prev, marquee: { row1, row2 } }));
   };
 
   const uploadHeroVideo = async (file: File): Promise<string | null> => {
@@ -857,16 +859,137 @@ export default function AdminDashboard() {
 
   const renderHomeMarquee = () => {
     type MarqueeItem = { id: string; src: string; alt: string };
-    const logos = ((content.marquee as Record<string, unknown>)?.logos as MarqueeItem[]) ?? [];
+    type MarqueeRows = { row1: MarqueeItem[]; row2: MarqueeItem[] };
 
-    const updateLogos = (next: MarqueeItem[]) => {
-      setContent((p) => ({ ...p, marquee: { logos: next } }));
+    const { row1, row2 } = normalizeMarqueeAdminState(
+      content.marquee as { row1?: MarqueeItem[]; row2?: MarqueeItem[]; logos?: MarqueeItem[] } | undefined
+    );
+
+    const updateMarqueeRows = (next: MarqueeRows) => {
+      setContent((p) => ({ ...p, marquee: next }));
     };
 
-    const resolvePreviewSrc = (src: string) => {
+    const resolveMarqueePreviewSrc = (src: string) => {
       if (src.startsWith("/uploads/")) return `${API_URL}${src}`;
       return src;
     };
+
+    const renderMarqueeRowSection = (
+      rowKey: "row1" | "row2",
+      label: string,
+      logos: MarqueeItem[]
+    ) => (
+      <div className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-[#1a1a1a]">{label}</h3>
+            <p className="text-sm text-gray-500">
+              {logos.length} / {MARQUEE_LOGOS_PER_ROW} logos
+            </p>
+          </div>
+          <button
+            type="button"
+            disabled={logos.length >= MARQUEE_LOGOS_PER_ROW}
+            onClick={() => {
+              if (logos.length >= MARQUEE_LOGOS_PER_ROW) {
+                alert(`Maximum ${MARQUEE_LOGOS_PER_ROW} logos allowed in ${label}.`);
+                return;
+              }
+              const nextRows: MarqueeRows = {
+                row1,
+                row2,
+                [rowKey]: [...logos, { id: `${rowKey}-${Date.now()}`, src: "", alt: "Client logo" }],
+              };
+              updateMarqueeRows(nextRows);
+            }}
+            className="rounded-lg bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Add logo
+          </button>
+        </div>
+
+        {logos.length === 0 ? (
+          <p className="rounded-lg border border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center text-sm text-gray-400">
+            No logos in {label.toLowerCase()} yet.
+          </p>
+        ) : (
+          logos.map((logo, i) => {
+            const uploadKey = `${rowKey}-${logo.id}`;
+            return (
+              <div key={logo.id} className="flex flex-col gap-4 rounded-xl border border-gray-100 bg-gray-50 p-4 sm:flex-row sm:items-center">
+                <div className={`relative mx-auto flex shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white sm:mx-0 ${MARQUEE_SLOT_CLASS}`}>
+                  {logo.src ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={resolveMarqueePreviewSrc(logo.src)} alt={logo.alt} className="h-full w-full object-contain p-2 sm:p-2.5" />
+                  ) : (
+                    <span className="text-xs text-gray-400">No logo</span>
+                  )}
+                </div>
+                <div className="flex flex-1 flex-wrap gap-2">
+                  <label
+                    className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingMarqueeId === uploadKey ? "pointer-events-none opacity-50" : ""}`}
+                  >
+                    {uploadingMarqueeId === uploadKey ? "Uploading…" : logo.src ? "Replace logo" : "Upload logo"}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
+                      className="hidden"
+                      disabled={uploadingMarqueeId === uploadKey}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setUploadingMarqueeId(uploadKey);
+                        try {
+                          const url = await uploadMarqueeLogo(file);
+                          const altFromFile = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || "Client logo";
+                          const nextRow = [...logos];
+                          nextRow[i] = { ...nextRow[i], src: url, alt: altFromFile };
+                          const nextRows: MarqueeRows = { row1, row2, [rowKey]: nextRow };
+                          updateMarqueeRows(nextRows);
+                          await persistMarqueeRows(
+                            rowKey === "row1" ? nextRow : row1,
+                            rowKey === "row2" ? nextRow : row2
+                          );
+                          setSaved(true);
+                          setTimeout(() => setSaved(false), 2000);
+                        } catch (err) {
+                          alert(err instanceof Error ? err.message : "Upload failed");
+                        } finally {
+                          setUploadingMarqueeId(null);
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    disabled={uploadingMarqueeId === uploadKey}
+                    onClick={async () => {
+                      const nextRow = logos.filter((_, idx) => idx !== i);
+                      const nextRows: MarqueeRows = { row1, row2, [rowKey]: nextRow };
+                      updateMarqueeRows(nextRows);
+                      try {
+                        await persistMarqueeRows(
+                          rowKey === "row1" ? nextRow : row1,
+                          rowKey === "row2" ? nextRow : row2
+                        );
+                        setSaved(true);
+                        setTimeout(() => setSaved(false), 2000);
+                      } catch (err) {
+                        alert(err instanceof Error ? err.message : "Failed to remove logo");
+                      }
+                    }}
+                    className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
 
     return (
       <div className="flex flex-col gap-6">
@@ -881,93 +1004,15 @@ export default function AdminDashboard() {
               On-site display size: <strong>{MARQUEE_SLOT_DISPLAY_WIDTH} × {MARQUEE_SLOT_DISPLAY_HEIGHT} px</strong> — crop tight around the logo, avoid extra whitespace in the file
             </li>
             <li>
-              Maximum <strong>{MARQUEE_MAX_LOGOS} logos</strong> in{" "}
-              <strong>2 rows of {MARQUEE_MAX_LOGOS / 2}</strong> — uploads save automatically
+              Up to <strong>{MARQUEE_LOGOS_PER_ROW} logos per row</strong> ({MARQUEE_ROW_COUNT} rows) — uploads save automatically
             </li>
           </ul>
         </div>
         <p className="text-sm text-gray-500">
-          {logos.length} / {MARQUEE_MAX_LOGOS} logos · Uploads and removals save instantly.
+          Row 1: {row1.length} logos · Row 2: {row2.length} logos · Uploads and removals save instantly.
         </p>
-        <div className="flex flex-col gap-4">
-          {logos.map((logo, i) => (
-            <div key={logo.id} className="flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-sm sm:flex-row sm:items-center">
-              <div className={`relative mx-auto flex shrink-0 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 sm:mx-0 ${MARQUEE_SLOT_CLASS}`}>
-                {logo.src ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={resolvePreviewSrc(logo.src)} alt={logo.alt} className="h-full w-full object-contain p-2 sm:p-2.5" />
-                ) : (
-                  <span className="text-xs text-gray-400">No logo</span>
-                )}
-              </div>
-              <div className="flex flex-1 flex-wrap gap-2">
-                <label
-                  className={`cursor-pointer rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${uploadingMarqueeId === logo.id ? "pointer-events-none opacity-50" : ""}`}
-                >
-                  {uploadingMarqueeId === logo.id ? "Uploading…" : logo.src ? "Replace logo" : "Upload logo"}
-                  <input
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif"
-                    className="hidden"
-                    disabled={uploadingMarqueeId === logo.id}
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      setUploadingMarqueeId(logo.id);
-                      try {
-                        const url = await uploadMarqueeLogo(file);
-                        const altFromFile = file.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || "Client logo";
-                        const next = [...logos];
-                        next[i] = { ...next[i], src: url, alt: altFromFile };
-                        updateLogos(next);
-                        await persistMarqueeLogos(next);
-                        setSaved(true);
-                        setTimeout(() => setSaved(false), 2000);
-                      } catch (err) {
-                        alert(err instanceof Error ? err.message : "Upload failed");
-                      } finally {
-                        setUploadingMarqueeId(null);
-                        e.target.value = "";
-                      }
-                    }}
-                  />
-                </label>
-                <button
-                  type="button"
-                  disabled={uploadingMarqueeId === logo.id}
-                  onClick={async () => {
-                    const next = logos.filter((_, idx) => idx !== i);
-                    updateLogos(next);
-                    try {
-                      await persistMarqueeLogos(next);
-                      setSaved(true);
-                      setTimeout(() => setSaved(false), 2000);
-                    } catch (err) {
-                      alert(err instanceof Error ? err.message : "Failed to remove logo");
-                    }
-                  }}
-                  className="rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-        <button
-          type="button"
-          disabled={logos.length >= MARQUEE_MAX_LOGOS}
-          onClick={() => {
-            if (logos.length >= MARQUEE_MAX_LOGOS) {
-              alert(`Maximum ${MARQUEE_MAX_LOGOS} logos allowed.`);
-              return;
-            }
-            updateLogos([...logos, { id: String(Date.now()), src: "", alt: "Client logo" }]);
-          }}
-          className="w-fit rounded-lg bg-[#1a1a1a] px-5 py-2.5 text-sm font-medium text-white hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Add logo
-        </button>
+        {renderMarqueeRowSection("row1", "Row 1", row1)}
+        {renderMarqueeRowSection("row2", "Row 2", row2)}
       </div>
     );
   };

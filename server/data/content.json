@@ -473,7 +473,7 @@
     ]
   },
   "marquee": {
-    "logos": [
+    "row1": [
       {
         "id": "bsnl",
         "src": "/uploads/image-1781840282024-681374348.png",
@@ -500,11 +500,6 @@
         "alt": "skoda"
       },
       {
-        "id": "skoda",
-        "src": "/uploads/image-1781840416361-127935003.png",
-        "alt": "skoda"
-      },
-      {
         "id": "suzuki",
         "src": "/uploads/image-1781840473898-114353554.png",
         "alt": "suzuki"
@@ -528,27 +523,9 @@
         "id": "1781843406343",
         "src": "/uploads/image-1781843413286-709731798.png",
         "alt": "rittal"
-      },
-      {
-        "id": "1781843459110",
-        "src": "/uploads/image-1781843463750-705902264.png",
-        "alt": "cerence"
-      },
-      {
-        "id": "1781843901696",
-        "src": "/uploads/image-1781843909233-172417304.png",
-        "alt": "delta"
-      },
-      {
-        "id": "1781843910504",
-        "src": "/uploads/image-1781844050904-37453957.png",
-        "alt": "scheinder"
-      },
-      {
-        "id": "1781844248178",
-        "src": "/uploads/image-1781844256400-515416461.png",
-        "alt": "exicom"
-      },
+      }
+    ],
+    "row2": [
       {
         "id": "1781844336778",
         "src": "/uploads/image-1781844345427-423444378.png",
@@ -558,6 +535,31 @@
         "id": "1781844415145",
         "src": "/uploads/image-1781844434515-782851238.png",
         "alt": "jio bp"
+      },
+      {
+        "id": "row2-1782723577585",
+        "src": "/uploads/image-1782723620860-114123516.png",
+        "alt": "exicom"
+      },
+      {
+        "id": "row2-1782723632349",
+        "src": "/uploads/image-1782723642034-596747715.png",
+        "alt": "scheinder"
+      },
+      {
+        "id": "row2-1782723645250",
+        "src": "/uploads/image-1782723671201-420693448.png",
+        "alt": "delta"
+      },
+      {
+        "id": "row2-1782723702584",
+        "src": "/uploads/image-1782723711887-194106796.png",
+        "alt": "skoda"
+      },
+      {
+        "id": "row2-1782723714601",
+        "src": "/uploads/image-1782723740912-697764588.png",
+        "alt": "cerence"
       }
     ]
   },

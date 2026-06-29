@@ -128,21 +128,50 @@ router.put('/:section',
     }
 
     // Additional section-specific validation
-    if (section === 'marquee' && Array.isArray(req.body.logos)) {
-      if (req.body.logos.length > 18) {
-        return res.status(400).json({ message: 'Marquee supports a maximum of 18 logos.' });
-      }
-      // Validate each logo object
-      for (const logo of req.body.logos) {
-        if (!logo.id || !logo.src || !logo.alt) {
-          return res.status(400).json({ 
-            message: 'Each logo must have id, src, and alt properties.' 
+    if (section === 'marquee') {
+      const MARQUEE_LOGOS_PER_ROW = 15;
+
+      const validateLogo = (logo) => {
+        if (!logo.id || typeof logo.id !== 'string') {
+          return 'Each logo must have a valid id.';
+        }
+        if (typeof logo.src !== 'string' || typeof logo.alt !== 'string') {
+          return 'Logo src and alt must be strings.';
+        }
+        return null;
+      };
+
+      if (Array.isArray(req.body.row1) || Array.isArray(req.body.row2)) {
+        const row1 = Array.isArray(req.body.row1) ? req.body.row1 : [];
+        const row2 = Array.isArray(req.body.row2) ? req.body.row2 : [];
+
+        if (row1.length > MARQUEE_LOGOS_PER_ROW || row2.length > MARQUEE_LOGOS_PER_ROW) {
+          return res.status(400).json({
+            message: `Each row supports up to ${MARQUEE_LOGOS_PER_ROW} logos.`,
           });
         }
-        if (typeof logo.id !== 'string' || typeof logo.src !== 'string' || typeof logo.alt !== 'string') {
-          return res.status(400).json({ 
-            message: 'Logo id, src, and alt must be strings.' 
-          });
+
+        for (const logo of [...row1, ...row2]) {
+          const error = validateLogo(logo);
+          if (error) return res.status(400).json({ message: error });
+        }
+
+        content[section] = { row1, row2 };
+        writeJSON('content.json', content);
+        return res.json({ message: `Section "${section}" updated`, data: content[section] });
+      }
+
+      if (Array.isArray(req.body.logos)) {
+        const MARQUEE_MAX_LOGOS = 30;
+        if (req.body.logos.length > MARQUEE_MAX_LOGOS) {
+          return res.status(400).json({ message: `Marquee supports a maximum of ${MARQUEE_MAX_LOGOS} logos.` });
+        }
+        for (const logo of req.body.logos) {
+          const error = validateLogo(logo);
+          if (error) return res.status(400).json({ message: error });
+          if (!logo.src) {
+            return res.status(400).json({ message: 'Each logo must have id, src, and alt properties.' });
+          }
         }
       }
     }

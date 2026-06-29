@@ -40,7 +40,10 @@ export interface SiteContent {
     social: { facebook: string; instagram: string; whatsapp: string; twitter: string };
   };
   marquee?: {
-    logos: { id: string; src: string; alt: string }[];
+    row1?: { id: string; src: string; alt: string }[];
+    row2?: { id: string; src: string; alt: string }[];
+    /** @deprecated legacy flat list */
+    logos?: { id: string; src: string; alt: string }[];
   };
   aboutPage?: {
     hero: {
